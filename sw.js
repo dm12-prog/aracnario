@@ -1,6 +1,6 @@
 /* Aracnário service worker — Phase 1: offline app shell.
    Bump CACHE when you change any precached file so clients update. */
-const CACHE = 'aracnario-shell-v19';
+const CACHE = 'aracnario-shell-v20';
 
 /* Files that make up the app itself (not remote data/photos).
    src/* carry ?v= matching index.html so a version bump busts old copies. */
