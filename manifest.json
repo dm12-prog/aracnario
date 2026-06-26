@@ -1,0 +1,17 @@
+{
+  "name": "Aracnário — Spiders of Portugal",
+  "short_name": "Aracnário",
+  "description": "A field catalogue of spiders found in Portugal, with live iNaturalist data and procedurally generated sprites.",
+  "lang": "en",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0e1519",
+  "theme_color": "#0e1519",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

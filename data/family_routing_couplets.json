@@ -1,0 +1,859 @@
+[
+ {
+  "step": 1,
+  "options": [
+   {
+    "text": "Orthognath position of the chelicerae: Basic segments parallel, projecting forwards; the fangs almost parallel",
+    "leads_to": "step 2"
+   },
+   {
+    "text": "Labidognath position of the chelicerae: Basic segments pointing downwards; tips of the fangs directed toward each other (in many labidognath spiders the tips of the claws converge (e.g. Dysderidae); the basic segments of the chelicerae almost always diverge (sloping or perpendicular) downwards",
+    "leads_to": "step 7"
+   }
+  ]
+ },
+ {
+  "step": 2,
+  "options": [
+   {
+    "text": "Six spinnerets; Prosoma and habitus as in fig.",
+    "leads_to": "Atypidae"
+   },
+   {
+    "text": "Two or four spinnerets",
+    "leads_to": "step 3"
+   }
+  ]
+ },
+ {
+  "step": 3,
+  "options": [
+   {
+    "text": "Claw tufts present, third claw absent (paired claws present)",
+    "leads_to": "Theraphosidae"
+   },
+   {
+    "text": "Claw tufts absent, third claw present",
+    "leads_to": "step 4"
+   }
+  ]
+ },
+ {
+  "step": 4,
+  "options": [
+   {
+    "text": "Dense scopula on anterior tarsi and metatarsi",
+    "leads_to": "step 5"
+   },
+   {
+    "text": "Scopulae on anterior tarsi and metatarsi absent (or very thin in males only)",
+    "leads_to": "step 6"
+   }
+  ]
+ },
+ {
+  "step": 5,
+  "options": [
+   {
+    "text": "Ocular process absent",
+    "leads_to": "Cyrtaucheniidae"
+   },
+   {
+    "text": "Ocular process present, prosoma with recurved or short, straight fovea",
+    "leads_to": "Nemesiidae"
+   }
+  ]
+ },
+ {
+  "step": 6,
+  "options": [
+   {
+    "text": "Dense spinefields on anterior tarsi and metatarsi absent, posterior lateral spinnerets very long, posterior median spinnerets wide apart, fovea an open, broad pit, labium with numerous cuspules",
+    "leads_to": "Macrothelidae"
+   },
+   {
+    "text": "Dense spinefields on anterior tarsi and metatarsi, spinnerets short",
+    "leads_to": "Ctenizidae"
+   }
+  ]
+ },
+ {
+  "step": 7,
+  "options": [
+   {
+    "text": "Anterior median eyes clearly larger than other eyes, like search lights; field of eyes quadrangular in dorsal view (the posterior eyes of Salticidae may be difficult to recognize for beginners, due to their smallness, but they are always present); habitus as fig.",
+    "leads_to": "Salticidae"
+   },
+   {
+    "text": "Anterior median eyes normally not clearly larger than others; if anterior median eyes are larger than others, the eye field is clearly not quadrangular when viewed from above (dorsal view)",
+    "leads_to": "step 8"
+   }
+  ]
+ },
+ {
+  "step": 8,
+  "options": [
+   {
+    "text": "Only one pair of spinnerets clearly visible (the others reduced and hardly visible); serrula present or absent",
+    "leads_to": "step 9"
+   },
+   {
+    "text": "Three pairs of spinnerets clearly visible; serrula present (the spinnerets can vary in size, the median spinnerets in particular are relatively small and more or less hidden by the anterior and posterior pair of spinnerets)",
+    "leads_to": "step 10"
+   }
+  ]
+ },
+ {
+  "step": 9,
+  "options": [
+   {
+    "text": "Anterior lateral spinnerets long; serrula absent; cheliceral fangs short; hunting spiders",
+    "leads_to": "Zodariidae"
+   },
+   {
+    "text": "Serrula present; femur I strongly thickened",
+    "leads_to": "Palpimanidae"
+   }
+  ]
+ },
+ {
+  "step": 10,
+  "options": [
+   {
+    "text": "Posterior median and lateral eyes form, in frontal view, an equilateral hexagon; legs with long spines; opisthosoma tapering; habitus as fig.; hunting spiders",
+    "leads_to": "Oxyopidae"
+   },
+   {
+    "text": "Position of the eyes different",
+    "leads_to": "step 11"
+   }
+  ]
+ },
+ {
+  "step": 11,
+  "options": [
+   {
+    "text": "Posterior lateral eyes larger than the other eyes; males have a characteristic tuft of hair on the anterior spinnerets; prosoma with typical pattern of stripes; the tips of the tarsi covered with scopula hairs; habitus as fig.; hunting on the ground",
+    "leads_to": "Miturgidae"
+   },
+   {
+    "text": "Posterior lateral eyes not larger than the other eyes; no tuft of hair on anterior spinnerets of male",
+    "leads_to": "step 12"
+   }
+  ]
+ },
+ {
+  "step": 12,
+  "options": [
+   {
+    "text": "Eyes clearly arranged in three distinguishable rows: anterior eyes - posterior median eyes - posterior lateral eyes (some of the spiders not mentioned at 13 show resemblances with this eye arrangement. In Textrix (Agelenidae) the posterior median eyes are clearly larger than the posterior lateral eyes. In Zoropsis (Zoropsidae) the anterior median eyes are clearly smaller than the anterior lateral eyes and the intersection of both the (i) middle line of the prosoma and the connection line of the (ii) posterior lateral eyes/posterior median eyes lies distinctively, as in many other spiders (e.g. some Thomisidae), behind the front edge of the prosoma; compare 13)",
+    "leads_to": "step 13"
+   },
+   {
+    "text": "Eyes different",
+    "leads_to": "step 15"
+   }
+  ]
+ },
+ {
+  "step": 13,
+  "options": [
+   {
+    "text": "Connecting line of posterior lateral eyes - posterior median eyes intersects the middle line of the carapace at the anterior margin of the prosoma or closely behind it; position of the eyes as fig.; hunting spiders; females carry egg sac in their chelicerae",
+    "leads_to": "step 14"
+   },
+   {
+    "text": "Connecting line of posterior lateral eyes - posterior median eyes intersects the middle line of the carapace in front of the anterior margin of the prosoma; position of the eyes as fig.; hunting spiders; females carry their egg sac attached to the spinnerets",
+    "leads_to": "Lycosidae"
+   }
+  ]
+ },
+ {
+  "step": 14,
+  "options": [
+   {
+    "text": "Colouration very variable from yellow, bright brown to (mostly) red-brown and grey or black; prosoma with a bright, distinct median longitudinal stripe; opisthosoma long and slender, tapering toward anterior end, dorsally with a wide jagged stripe with dark margins; posterior cheliceral furrow margin with 2-3 teeth; eyes as fig.",
+    "leads_to": "Pisauridae"
+   },
+   {
+    "text": "Colouration red-brown, sometimes with small white dots; prosoma with 2 broad yellowish white longitudinal stripes; opisthosoma broad, strongly rounded posteriorly, dorsally dark with pronounced cardiac mark, laterally brighter (pattern variable); posterior cheliceral furrow margin with 4 teeth; eyes as fig.",
+    "leads_to": "Dolomedidae"
+   }
+  ]
+ },
+ {
+  "step": 15,
+  "options": [
+   {
+    "text": "Position of both first pairs of legs laterigrade, the original lower (prolateral) surface directed upwards, hence \"crab-like\" habitus as fig. (eyes often have white surroundings)",
+    "leads_to": "step 16"
+   },
+   {
+    "text": "Position of both first pairs of legs not laterigrade",
+    "leads_to": "step 19"
+   }
+  ]
+ },
+ {
+  "step": 16,
+  "options": [
+   {
+    "text": "Legs I and II clearly longer and often stouter than legs III, IV; eyes often on a elevation",
+    "leads_to": "Thomisidae"
+   },
+   {
+    "text": "Legs I and II not clearly longer and stouter than legs III and IV",
+    "leads_to": "step 17"
+   }
+  ]
+ },
+ {
+  "step": 17,
+  "options": [
+   {
+    "text": "Scopula on tarsi and metatarsi (exception in Philodromidae: Tibellus und Thanatus with scopulae on tarsus and metatarsus)",
+    "leads_to": "Sparassidae"
+   },
+   {
+    "text": "Scopula only at the tips of the tarsi",
+    "leads_to": "step 18"
+   }
+  ]
+ },
+ {
+  "step": 18,
+  "options": [
+   {
+    "text": "Eye position and habitus as fig.",
+    "leads_to": "Philodromidae"
+   },
+   {
+    "text": "Eyes arranged in two rows as fig.; very flat spider; only one species in Europe; Mediterranean region",
+    "leads_to": "Selenopidae"
+   }
+  ]
+ },
+ {
+  "step": 19,
+  "options": [
+   {
+    "text": "Eye position as fig.; legs conspicuously long and thin",
+    "leads_to": "step 20"
+   },
+   {
+    "text": "Eyes different",
+    "leads_to": "step 21"
+   }
+  ]
+ },
+ {
+  "step": 20,
+  "options": [
+   {
+    "text": "Eyes (anterior lateral eyes, posterior lateral eyes, posterior median eyes) arranged in two groups of three eyes each; between them a pair of small anterior median eyes may be present or not; found in irregular webs; mostly synanthropic",
+    "leads_to": "Pholcidae"
+   },
+   {
+    "text": "Four eyes in one group, behind them at some distance another pair (haplogyne; small, almost not pigmented extremely rare spiders to be found in caves and cave-like habitats)",
+    "leads_to": "Leptonetidae"
+   },
+   {
+    "text": "Chelicerae fused at least at base; very small spiders (<0.6 mm); only one species recorded in Europe (Portugal); cave-dwelling",
+    "leads_to": "Symphytognathidae"
+   }
+  ]
+ },
+ {
+  "step": 21,
+  "options": [
+   {
+    "text": "Haplogyne spiders: female has no epigyne; male with pear-, onion- or bottle-shaped bulbus; basal, mostly thickened part of the bulbus scarcely covered by the cymbium (almost always six eyes)",
+    "leads_to": "step 22"
+   },
+   {
+    "text": "Entelegyne spiders: female with epigyne; male with complex bulbus, with basal part almost completely covered by the cymbium (mostly eight eyes)",
+    "leads_to": "step 28"
+   }
+  ]
+ },
+ {
+  "step": 22,
+  "options": [
+   {
+    "text": "Eyes arranged in a closed group: all eyes clearly less than one eye diameter separated from each other (exception: distance between anterior eyes and posterior eyes can be larger, so that the eyes form a closed circle)",
+    "leads_to": "step 23"
+   },
+   {
+    "text": "Eyes not arranged in a closed group: eyes or groups of eyes separated by a clearly visible interspace (> diameter of eyes)",
+    "leads_to": "step 25"
+   }
+  ]
+ },
+ {
+  "step": 23,
+  "options": [
+   {
+    "text": "8 eyes; the very long labium fused with the sternum; female with short, proximal calamistrum; habitus as fig. (only in most southern regions)",
+    "leads_to": "Filistatidae"
+   },
+   {
+    "text": "6 eyes; labium not fused with sternum, but at least separated by a seam; always without calamistrum (the seam of the labium might be difficult to see in the very small Oonopidae, but the labium is not so strikingly long. Spiders in alcohol often tend to show their legs in a most particular way i.e. > 360\u00b0 curled)",
+    "leads_to": "step 24"
+   }
+  ]
+ },
+ {
+  "step": 24,
+  "options": [
+   {
+    "text": "Body length smaller or equal 2 mm; with massive scutum on opisthosoma and armoured pleura or faint white to reddish; eyes as fig.; rare",
+    "leads_to": "Oonopidae"
+   },
+   {
+    "text": "Body length > 3 mm; habitus different (cf. fig.)",
+    "leads_to": "Dysderidae"
+   }
+  ]
+ },
+ {
+  "step": 25,
+  "options": [
+   {
+    "text": "Book lungs missing, replaced by a pair of spiracles, situated on both sides of the epigyne; legs very long and slender, > 6 times prosoma length; body length < 2 mm; in caves; only one species in Europe (France, Spain)",
+    "leads_to": "Telemidae"
+   },
+   {
+    "text": "Book lungs present",
+    "leads_to": "step 26"
+   }
+  ]
+ },
+ {
+  "step": 26,
+  "options": [
+   {
+    "text": "Tarsi of legs with 2 claws; habitus as fig.",
+    "leads_to": "Sicariidae"
+   },
+   {
+    "text": "Tarsi of legs with 3 claws",
+    "leads_to": "step 27"
+   }
+  ]
+ },
+ {
+  "step": 27,
+  "options": [
+   {
+    "text": "Body colour dark grey, black or dark brown; prosoma not strikingly marked; position of legs characteristic: legs I-III directed forwards; legs not conspicuously slender; eyes and habitus as fig.",
+    "leads_to": "Segestriidae"
+   },
+   {
+    "text": "Body colour light reddish to yellowish brown; prosoma very high; eyes as fig.; body with conspicuous black pattern; position of legs normal, legs very slender (in Central Europe almost only synanthropic, in southern areas also free living)",
+    "leads_to": "Scytodidae"
+   }
+  ]
+ },
+ {
+  "step": 28,
+  "options": [
+   {
+    "text": "Tarsi of the legs with 3 claws; middle claw often very small and covered by tufts of hair, best visible from bottom side; the dense scopula hairs are in this case mostly divided into two cushions, between them the often dark shining middle claw is visible. Might be difficult to detect in small spiders, use indirect light source!",
+    "leads_to": "step 29"
+   },
+   {
+    "text": "Tarsi of legs with 2 claws",
+    "leads_to": "step 56"
+   }
+  ]
+ },
+ {
+  "step": 29,
+  "options": [
+   {
+    "text": "Posterior spinnerets very long, on their inner side with a row of silk producing tubules",
+    "leads_to": "Hersiliidae"
+   },
+   {
+    "text": "Different",
+    "leads_to": "step 30"
+   }
+  ]
+ },
+ {
+  "step": 30,
+  "options": [
+   {
+    "text": "Lateral eyes form a square over the total width of the prosoma; females - mostly with exception of the frontal head region - uniformly black and with cribellum/calamistrum; males with vermilion opisthosoma with 2-3 pairs of black spots; body covered with velvety hairs; females in flat cribellate webs ending in a tube; found in xerothermic areas; rare",
+    "leads_to": "Eresidae"
+   },
+   {
+    "text": "Eyes different",
+    "leads_to": "step 31"
+   }
+  ]
+ },
+ {
+  "step": 31,
+  "options": [
+   {
+    "text": "Between the long posterior spinnerets a remarkable anal tubercle with star-like brushes; habitus as fig.",
+    "leads_to": "Oecobiidae"
+   },
+   {
+    "text": "Anal tubercle normal (posterior spinnerets short or long)",
+    "leads_to": "step 32"
+   }
+  ]
+ },
+ {
+  "step": 32,
+  "options": [
+   {
+    "text": "Tarsus dorsally with 0-2 trichobothria",
+    "leads_to": "step 33"
+   },
+   {
+    "text": "Tarsus dorsally with at least 3 trichobothria",
+    "leads_to": "step 49"
+   }
+  ]
+ },
+ {
+  "step": 33,
+  "options": [
+   {
+    "text": "Femur of the pedipalp with a group of thicker bristles (in both sexes); male metatarsus I strongly modified; cribellate; only one species in Europe (Turkey)",
+    "leads_to": "Phyxelididae"
+   },
+   {
+    "text": "Different",
+    "leads_to": "step 34"
+   }
+  ]
+ },
+ {
+  "step": 34,
+  "options": [
+   {
+    "text": "Prosoma and habitus as fig.; cribellate; build horizontal orb webs or triangular webs",
+    "leads_to": "Uloboridae"
+   },
+   {
+    "text": "Habitus different (cribellate or ecribellate)",
+    "leads_to": "step 35"
+   }
+  ]
+ },
+ {
+  "step": 35,
+  "options": [
+   {
+    "text": "Spinnerets arranged in one transverse row",
+    "leads_to": "Hahniidae"
+   },
+   {
+    "text": "Spinnerets not as above",
+    "leads_to": "step 36"
+   }
+  ]
+ },
+ {
+  "step": 36,
+  "options": [
+   {
+    "text": "Anterior spinnerets separated by twice their diameter, not arranged transversely (males with a twisted embolus, long, reaching to the beginning of the tibia; females correspondingly with long, irregularly declining copulatory openings, +/- visible through the epigyne; very rare)",
+    "leads_to": "Cybaeidae"
+   },
+   {
+    "text": "Spinnerets different",
+    "leads_to": "step 37"
+   }
+  ]
+ },
+ {
+  "step": 37,
+  "options": [
+   {
+    "text": "Cribellate spiders; female with cribellum in front of the spinnerets and with calamistrum; male with a broad rudiment of a cribellum; calamistrum arranged in one row",
+    "leads_to": "step 38"
+   },
+   {
+    "text": "Not cribellate; in front of the spinnerets a point like colulus or colulus reduced (in the last case - especially in small spiders - mostly 2 or more bristles instead of a colulus)",
+    "leads_to": "step 39"
+   }
+  ]
+ },
+ {
+  "step": 38,
+  "options": [
+   {
+    "text": "Gnathocoxae converging apically; prosoma and opisthosoma bearing dense layer of short hairs",
+    "leads_to": "Dictynidae"
+   },
+   {
+    "text": "Gnathocoxae almost parallel; chelicerae of the male usually with short lateral spines, less distinct in females (exception: Pandava laminata)",
+    "leads_to": "Titanoecidae"
+   }
+  ]
+ },
+ {
+  "step": 39,
+  "options": [
+   {
+    "text": "Sternum with two depressions at the anterior edge; the globular opisthosoma is usually largely vaulted over the prosoma; body pattern as fig.; one small and rare species (body length < 3 mm)",
+    "leads_to": "Theridiosomatidae"
+   },
+   {
+    "text": "Sternum without depressions at the anterior edge (opisthosoma usually not vaulted over the prosoma)",
+    "leads_to": "step 40"
+   }
+  ]
+ },
+ {
+  "step": 40,
+  "options": [
+   {
+    "text": "Labrum with a sclerotised bulge reaching between the chelicerae; pleura sclerotised; body length < 2 mm (habitus unique: eyes very small, body colour reddish; body heavily armoured; rare)",
+    "leads_to": "Anapidae"
+   },
+   {
+    "text": "Labrum without a sclerotised bulge; pleura usually with at most single sclerites; if pleura strongly sclerotised, then body length > 3 mm and/or other colour",
+    "leads_to": "step 41"
+   }
+  ]
+ },
+ {
+  "step": 41,
+  "options": [
+   {
+    "text": "At least females with dark tubercle proximally on femur I; males with strong thorn prolateral on metatarsus I; habitus as fig.",
+    "leads_to": "Mysmenidae"
+   },
+   {
+    "text": "Different",
+    "leads_to": "step 42"
+   }
+  ]
+ },
+ {
+  "step": 42,
+  "options": [
+   {
+    "text": "Chelicerae with keel ending in a strong cheliceral tooth; very rare dwarf forms; body length < 3 mm",
+    "leads_to": "Synaphridae"
+   },
+   {
+    "text": "Different",
+    "leads_to": "step 43"
+   }
+  ]
+ },
+ {
+  "step": 43,
+  "options": [
+   {
+    "text": "Tibia, metatarsus I and II with one row of long spines, with shorter spines in between; opisthosoma with at least one pair of tubercles; habitus as fig.",
+    "leads_to": "Mimetidae"
+   },
+   {
+    "text": "Tibia and metatarsus I and II normally without striking rows of spines; when rows of spines present, then opisthosoma without tubercles",
+    "leads_to": "step 44"
+   }
+  ]
+ },
+ {
+  "step": 44,
+  "options": [
+   {
+    "text": "Male palp with very large, dark, proximal paracymbium; females with row of strengthened and serrated hairs ventrally on tarsus IV; labium distally with a whitish swelling as fig.; epigyne as fig.",
+    "leads_to": "Nesticidae"
+   },
+   {
+    "text": "Different",
+    "leads_to": "step 45"
+   }
+  ]
+ },
+ {
+  "step": 45,
+  "options": [
+   {
+    "text": "Male palp with small distal paracymbium or paracymbium lacking; tibia of palp very close to the cymbium, cup-shaped with spoon-like anterior edge on the ventral side (covers often the posterior area of the bulbus); females with rows of strong and serrated bristles ventrally on tarsus IV - this is sometimes very difficult to recognize - or in multiple rows; labium mostly without distal swelling; when swelling indicated, then epigyne different (pigment of posterior eyes mostly brighter than that of the anterior median eyes, anterior median eyes often silvery white; chelicerae mostly weak or almost toothless)",
+    "leads_to": "Theridiidae"
+   },
+   {
+    "text": "Females without a row of strong bristles on tarsus IV; male palp different; labium with or without swelling (chelicerae mostly with two clearly visible rows of teeth)",
+    "leads_to": "step 46"
+   }
+  ]
+ },
+ {
+  "step": 46,
+  "options": [
+   {
+    "text": "Gnathocoxae at least 1.5 times longer than wide (chelicerae often big and diverging; paracymbium of male palp almost always very long or large and wide; in orb webs with open hub)",
+    "leads_to": "Tetragnathidae"
+   },
+   {
+    "text": "Gnathocoxae less than 1.5 times longer than wide (similar to fig.)",
+    "leads_to": "step 47"
+   }
+  ]
+ },
+ {
+  "step": 47,
+  "options": [
+   {
+    "text": "Height of clypeus less than twice diameter of anterior median eyes (note: Hypsosinga partially with very high, arched clypeus); chelicerae always without lateral stridulatory ridges; chelicerae mostly with lateral proximal condyle; proximal paracymbium of male palp almost always relatively small and glossy (cf. Tetragnathidae); in orb webs with closed hub; often larger or large and robust spiders; mostly with relatively short, strongly spined legs",
+    "leads_to": "Araneidae"
+   },
+   {
+    "text": "Different",
+    "leads_to": "step 48"
+   }
+  ]
+ },
+ {
+  "step": 48,
+  "options": [
+   {
+    "text": "Clypeus normally higher than 2 diameters of anterior median eyes; if less high (Tapinopa, Poeciloneta), then chelicerae with lateral stridulating ridges; lateral condyle of the chelicerae lacking (sheet-web spiders, the most abundant family with many medium sized and small species; larger species with long and relatively slender legs (variable spination), not very robust. Attention: the stridulatory grooves may be very difficult to recognize: strong magnification and indirect light required!",
+    "leads_to": "Linyphiidae"
+   },
+   {
+    "text": "Prosoma with conspicuously elongated fovea; cymbium of male pedipalp with a dentate dorsal excrescence; only one genus in Europe (France, Italy and Spain)",
+    "leads_to": "Pimoidae"
+   }
+  ]
+ },
+ {
+  "step": 49,
+  "options": [
+   {
+    "text": "Tarsus I with 3 dorsal trichobothria",
+    "leads_to": "step 50"
+   },
+   {
+    "text": "Tarsus I with at least 4 dorsal trichobothria",
+    "leads_to": "step 51"
+   }
+  ]
+ },
+ {
+  "step": 50,
+  "options": [
+   {
+    "text": "Anterior spinnerets separated by twice their diameter (males with very long embolus, reaching far beyond the patella; female with long, irregularly running copulatory ducts, visible through the epigyne; myrmecophilous; extremely rare)",
+    "leads_to": "Cybaeidae"
+   },
+   {
+    "text": "Anterior spinnerets separated by their diameter; embolus and copulatory ducts shorter",
+    "leads_to": "Cybaeidae"
+   }
+  ]
+ },
+ {
+  "step": 51,
+  "options": [
+   {
+    "text": "Anterior spinnerets separated by at least their diameter (posterior spinnerets a little bit longer than anterior - compared to Textrix (Agelenidae), where the anterior spinnerets are separated by about their diameter, but the posterior spinnerets are approx. twice as long as the anterior ones)",
+    "leads_to": "Cicurinidae"
+   },
+   {
+    "text": "Anterior spinnerets separated by less than their diameter",
+    "leads_to": "step 52"
+   }
+  ]
+ },
+ {
+  "step": 52,
+  "options": [
+   {
+    "text": "Posterior spinnerets clearly (about 2 times) longer than anterior ones",
+    "leads_to": "step 53"
+   },
+   {
+    "text": "Posterior spinnerets more or less equal in length or shorter than anterior ones",
+    "leads_to": "step 54"
+   }
+  ]
+ },
+ {
+  "step": 53,
+  "options": [
+   {
+    "text": "Head region wide and rounded laterally; thoracic region < 1,5 times as large as head region; leg I approx. as long as body (male palp with apophysis on tibia and patella)",
+    "leads_to": "Agelenidae"
+   },
+   {
+    "text": "Head region smaller, laterally almost rectangularly outlined; thoracic region > 1,5 times as large as head region; leg I clearly longer than body (male palps mostly without apophysis on patella, exception: Agelena)",
+    "leads_to": "Agelenidae"
+   }
+  ]
+ },
+ {
+  "step": 54,
+  "options": [
+   {
+    "text": "Cribellate spiders (except genus Ovtchinnikovia); chelicerae projecting knee-like at the base (viewed from above)",
+    "leads_to": "step 55"
+   },
+   {
+    "text": "Ecribellate spiders; chelicerae not projecting knee-like (viewed from above)",
+    "leads_to": "Cybaeidae"
+   }
+  ]
+ },
+ {
+  "step": 55,
+  "options": [
+   {
+    "text": "Labium clearly narrowed at the base; calamistrum arranged in two rows; chelicerae of the males without short laterally spines; habitus dorsally as fig.",
+    "leads_to": "Amaurobiidae"
+   },
+   {
+    "text": "Anterior median eyes about 1.4x larger than anterior lateral eyes. Embolus long and sigmoid.Badumna longinqua introduced in Germany, in hothouses",
+    "leads_to": "Desidae"
+   }
+  ]
+ },
+ {
+  "step": 56,
+  "options": [
+   {
+    "text": "Stigma of the trachea approx. in the middle between epigastric fold and the spinnerets; dorsal pattern as fig.",
+    "leads_to": "Anyphaenidae"
+   },
+   {
+    "text": "Stigma of the trachea right in front of the spinnerets",
+    "leads_to": "step 57"
+   }
+  ]
+ },
+ {
+  "step": 57,
+  "options": [
+   {
+    "text": "Apical part of spinnerets with conspicuous plumose hairs",
+    "leads_to": "Prodidomidae"
+   },
+   {
+    "text": "Spinnerets different",
+    "leads_to": "step 58"
+   }
+  ]
+ },
+ {
+  "step": 58,
+  "options": [
+   {
+    "text": "Basal segments of the spinnerets cylindrical and mostly long; posterior median eyes often oval, kidney-shaped or angular; in the genus Micaria the posterior median eyes are oval (an excellent identification character for many Gnaphosidae), but the spinnerets are mostly short; therefore they appear atypical; the identification marks are here the white or metallic scaly hairs on body and legs, the ant-like habitus and a saddle-shaped constriction of the opisthosoma which is mostly present",
+    "leads_to": "Gnaphosidae"
+   },
+   {
+    "text": "Basal segments of the spinnerets (sometimes only slightly) conical",
+    "leads_to": "step 59"
+   }
+  ]
+ },
+ {
+  "step": 59,
+  "options": [
+   {
+    "text": "Anterior spinnerets conical, subdistally with a sclerotised ring; tarsi pseudo-segmented, in preserved specimens often bent; only one species in Europe (Greece)",
+    "leads_to": "Cithaeronidae"
+   },
+   {
+    "text": "Different",
+    "leads_to": "step 60"
+   }
+  ]
+ },
+ {
+  "step": 60,
+  "options": [
+   {
+    "text": "Legs without spines, but metatarsi I and II with 2 rows of short cusps",
+    "leads_to": "Corinnidae"
+   },
+   {
+    "text": "Legs with spines",
+    "leads_to": "step 61"
+   }
+  ]
+ },
+ {
+  "step": 61,
+  "options": [
+   {
+    "text": "Large, robust cribellate spider, resembling a large Lycosidae; habitus as fig.",
+    "leads_to": "Zoropsidae"
+   },
+   {
+    "text": "Different",
+    "leads_to": "step 62"
+   }
+  ]
+ },
+ {
+  "step": 62,
+  "options": [
+   {
+    "text": "Width of eye field as large as half the width of the prosoma, but mostly clearly > 1/2 the largest width of the prosoma; labium distinctly longer than wide",
+    "leads_to": "step 63"
+   },
+   {
+    "text": "Width of the eye field < 1/2 the largest width of the prosoma",
+    "leads_to": "step 64"
+   }
+  ]
+ },
+ {
+  "step": 63,
+  "options": [
+   {
+    "text": "Posterior spinnerets two-segmented, distal segment short and rounded; legs short and stout, leg II longer than leg I; posterior eye row distinctly longer than anterior row; prosoma dorsally with a median groove; eyes and spinnerets as fig.",
+    "leads_to": "Clubionidae"
+   },
+   {
+    "text": "Posterior spinnerets clearly two-segmented, distal segment distinctly conical; legs long, leg I considerably longer than leg II; posterior eye row not longer than anterior row; prosoma dorsally without a groove",
+    "leads_to": "Cheiracanthiidae"
+   }
+  ]
+ },
+ {
+  "step": 64,
+  "options": [
+   {
+    "text": "Anterior eye row procurved",
+    "leads_to": "Corinnidae"
+   },
+   {
+    "text": "Different",
+    "leads_to": "step 65"
+   }
+  ]
+ },
+ {
+  "step": 65,
+  "options": [
+   {
+    "text": "Anterior eye row straight; eyes often close together",
+    "leads_to": "Liocranidae"
+   },
+   {
+    "text": "Different",
+    "leads_to": "Corinnidae"
+   },
+   {
+    "text": "Further family (includes now Liophrurillus, Orthobula, Phrurolinillus, Phrurolithus). See Corinnidae.",
+    "leads_to": "Phrurolithidae"
+   },
+   {
+    "text": "Further family (includes now Cetonana, Metatrachelas, Paratrachelas, Trachelas). See Corinnidae.",
+    "leads_to": "Trachelidae"
+   }
+  ]
+ }
+]

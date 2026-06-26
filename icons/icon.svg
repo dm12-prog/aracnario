@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Full-bleed background: required for maskable icons -->
+  <rect width="512" height="512" fill="#0e1519"/>
+  <rect width="512" height="512" fill="url(#g)"/>
+  <defs>
+    <radialGradient id="g" cx="50%" cy="38%" r="70%">
+      <stop offset="0%" stop-color="#16232a"/>
+      <stop offset="100%" stop-color="#0e1519"/>
+    </radialGradient>
+  </defs>
+  <!-- web hint (azulejo blue) -->
+  <g stroke="#2c6184" stroke-width="3" fill="none" opacity="0.55" stroke-linecap="round">
+    <line x1="256" y1="40" x2="256" y2="150"/>
+    <line x1="120" y1="120" x2="210" y2="200"/>
+    <line x1="392" y1="120" x2="302" y2="200"/>
+    <path d="M150 150 Q256 120 362 150"/>
+    <path d="M120 210 Q256 170 392 210"/>
+  </g>
+  <!-- spider: kept within central safe zone for maskable cropping -->
+  <g stroke="#e6982f" stroke-width="13" stroke-linecap="round" fill="none">
+    <!-- left legs -->
+    <path d="M232 250 Q170 232 138 196"/>
+    <path d="M228 270 Q150 268 116 256"/>
+    <path d="M228 292 Q150 300 120 326"/>
+    <path d="M234 312 Q176 340 152 380"/>
+    <!-- right legs -->
+    <path d="M280 250 Q342 232 374 196"/>
+    <path d="M284 270 Q362 268 396 256"/>
+    <path d="M284 292 Q362 300 392 326"/>
+    <path d="M278 312 Q336 340 360 380"/>
+  </g>
+  <!-- body -->
+  <ellipse cx="256" cy="300" rx="46" ry="58" fill="#e6982f"/>
+  <ellipse cx="256" cy="300" rx="46" ry="58" fill="url(#bg)"/>
+  <defs>
+    <radialGradient id="bg" cx="42%" cy="32%" r="75%">
+      <stop offset="0%" stop-color="#f3b35a"/>
+      <stop offset="100%" stop-color="#c97f1e"/>
+    </radialGradient>
+  </defs>
+  <!-- cephalothorax -->
+  <ellipse cx="256" cy="244" rx="30" ry="26" fill="#caa05a"/>
+  <!-- abdomen marking -->
+  <path d="M256 268 L246 300 L256 330 L266 300 Z" fill="#0e1519" opacity="0.45"/>
+  <!-- eyes -->
+  <circle cx="248" cy="238" r="4.5" fill="#0e1519"/>
+  <circle cx="264" cy="238" r="4.5" fill="#0e1519"/>
+</svg>

@@ -1,0 +1,34 @@
+[22:38:02] STEP 1/6  GBIF facet sweeps (whole / mainland / Azores / Madeira)
+[22:38:04]   whole-country species: 1043
+[22:38:04]   Azores species: 139
+[22:38:04]   Madeira species: 157
+[22:38:05]   mainland species: 874
+[22:38:05] STEP 2/6  GBIF backbone enrichment for 1043 species (threaded)
+[22:38:11]     enriched 200/1043
+[22:38:17]     enriched 400/1043
+[22:38:23]     enriched 600/1043
+[22:38:29]     enriched 800/1043
+[22:38:35]     enriched 1000/1043
+[22:38:36] STEP 3/6  WSC CSV load + name validation
+[22:38:36]   WSC VALID names: 53548  | WSC PT/Madeira/Azores-named: 503
+[22:38:36] STEP 4/6  iNaturalist bulk PT sweep
+[22:38:38]   iNat PT-observed species matched in bulk: 494
+[22:38:38] STEP 5/6  iNat gap-fill name lookups: 677 (throttled ~1.3/s)
+[22:41:00]     gap-fill 100/677  (matched so far 100)
+[22:43:23]     gap-fill 200/677  (matched so far 200)
+[22:45:46]     gap-fill 300/677  (matched so far 293)
+[22:48:10]     gap-fill 400/677  (matched so far 389)
+[22:50:34]     gap-fill 500/677  (matched so far 484)
+[22:53:04]     gap-fill 600/677  (matched so far 568)
+[22:54:56] STEP 6/6  write + validate
+[22:54:56] ============================================================
+[22:54:56] DONE in 1014s
+[22:54:56]   total entries:            1128
+[22:54:56]   Tier A (pt_confirmed):    1043
+[22:54:56]   Tier B (range-only):      85
+[22:54:56]   families:                 57
+[22:54:56]   with inat_taxon_id:       1056 (93%)
+[22:54:56]   needs-review (<=5 rec):   294
+[22:54:56]   entries missing source:   0  (must be 0)
+[22:54:56]   file:                     /Users/diogomontenegro/Claude/Projects/Aracnario/data/layer1_skeleton.json  (1025 KB)
+[22:54:56] ============================================================

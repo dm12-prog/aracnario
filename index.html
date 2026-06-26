@@ -1,0 +1,2335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- PWA: installable + field offline -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0e1519">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Aracnário">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<title>Aracnário — Spiders of Portugal</title>
+<style>
+  :root{
+    --ink:#0e1519; --ink2:#121c21; --tile:#16232a; --tile-edge:#22343d;
+    --paper:#eee7d8; --text:#e0e8ea; --muted:#8aa0a8; --muted2:#6f868e;
+    --line:#26393f; --azulejo:#4892c2; --azulejo-deep:#2c6184;
+    --amber:#e6982f; --amber-soft:#caa05a; --sil:#243741;
+    --good:#5cbf87; --warn:#e3a73f; --danger:#e57163;
+    --display:"Avenir Next","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+    --shadow:0 6px 22px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(900px 500px at 85% -8%, rgba(72,146,194,.10), transparent 60%),
+      radial-gradient(700px 420px at -5% 6%, rgba(230,152,47,.07), transparent 55%),
+      var(--ink);
+    color:var(--text); font-family:var(--display);
+    -webkit-font-smoothing:antialiased; line-height:1.5;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:22px 16px 64px}
+  a{color:var(--azulejo)}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+
+  /* ---------- Header ---------- */
+  header.top{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:space-between;
+    border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:18px}
+  .brand h1{font-size:clamp(28px,6vw,46px);line-height:.96;margin:.18em 0 .12em;letter-spacing:-.01em;font-weight:800}
+  .brand h1 .web{color:var(--amber)}
+  .brand p.sub{margin:0;color:var(--muted);max-width:46ch;font-size:14px}
+  .rankbox{min-width:240px;flex:1 1 260px;background:linear-gradient(180deg,var(--ink2),#0f1a1f);
+    border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
+  .rankbox .rk{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+  .rankbox .rank-name{font-weight:800;font-size:18px}
+  .rankbox .count{font-family:var(--mono);font-size:13px;color:var(--amber)}
+  .meter{height:10px;border-radius:6px;background:#0c161b;border:1px solid var(--line);overflow:hidden;margin:10px 0 6px;position:relative}
+  .meter > i{display:block;height:100%;background:linear-gradient(90deg,var(--azulejo-deep),var(--azulejo));border-radius:6px;transition:width .6s cubic-bezier(.22,1,.36,1)}
+  .next{font-family:var(--mono);font-size:11px;color:var(--muted2);letter-spacing:.04em}
+
+  /* rarity legend / breakdown */
+  .breakdown{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .pip{font-family:var(--mono);font-size:11px;letter-spacing:.03em;color:var(--muted);
+    display:inline-flex;align-items:center;gap:6px;background:#0d171c;border:1px solid var(--line);border-radius:999px;padding:3px 9px}
+  .pip .dot{width:9px;height:9px;border-radius:50%}
+
+  /* ---------- Achievements ---------- */
+  .ach-row{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 8px;margin:0 -2px 8px;scrollbar-width:thin}
+  .badge{flex:0 0 auto;display:flex;align-items:center;gap:9px;background:#0e1a20;border:1px solid var(--line);
+    border-radius:12px;padding:8px 12px;min-width:0;opacity:.5;transition:.25s}
+  .badge.earned{opacity:1;border-color:var(--amber-soft);background:linear-gradient(180deg,#1a1f17,#141b12);box-shadow:0 0 0 1px rgba(230,152,47,.12)}
+  .badge .glyph{width:26px;height:26px;display:grid;place-items:center;border-radius:8px;background:#0c1418;font-size:15px}
+  .badge.earned .glyph{background:rgba(230,152,47,.16)}
+  .badge .bt{font-size:12.5px;font-weight:700;white-space:nowrap}
+  .badge .bd{font-family:var(--mono);font-size:10px;color:var(--muted);white-space:nowrap}
+
+  /* ---------- Controls ---------- */
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:14px 0 16px}
+  .search{flex:1 1 220px;display:flex;align-items:center;gap:8px;background:var(--tile);border:1px solid var(--tile-edge);
+    border-radius:10px;padding:9px 12px}
+  .search input{flex:1;background:transparent;border:0;color:var(--text);font-family:var(--display);font-size:14px;outline:none}
+  .search svg{flex:0 0 auto;opacity:.6}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);
+    background:var(--tile);border:1px solid var(--tile-edge);border-radius:999px;padding:7px 12px;cursor:pointer;transition:.18s}
+  .chip:hover{color:var(--text);border-color:var(--azulejo-deep)}
+  .chip[aria-pressed="true"]{color:#08110f;background:var(--amber);border-color:var(--amber);font-weight:700}
+  select.sort{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;color:var(--text);background:var(--tile);
+    border:1px solid var(--tile-edge);border-radius:999px;padding:7px 12px;cursor:pointer;text-transform:uppercase}
+  .ghostbtn{font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);
+    background:transparent;border:1px dashed var(--line);border-radius:999px;padding:7px 12px;cursor:pointer}
+  .ghostbtn:hover{color:var(--text);border-color:var(--azulejo-deep)}
+
+  /* ---------- Grid + tiles ---------- */
+  .count-line{font-family:var(--mono);font-size:11px;color:var(--muted2);letter-spacing:.05em;margin:0 0 10px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:13px}
+  .tile{position:relative;background:var(--tile);border:1px solid var(--tile-edge);border-radius:14px;
+    padding:12px 12px 13px;cursor:pointer;text-align:left;color:inherit;font:inherit;overflow:hidden;
+    transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease}
+  .tile::before{content:"";position:absolute;left:0;top:0;height:3px;width:100%;background:var(--rar,#6b8088);opacity:.85}
+  .tile:hover{transform:translateY(-3px);border-color:var(--rar,#37505a);box-shadow:var(--shadow)}
+  .tile:focus-visible{outline:2px solid var(--azulejo);outline-offset:2px}
+  .tile .num{font-family:var(--mono);font-size:11px;color:var(--muted2);letter-spacing:.08em}
+  .tile.logged .num{color:var(--rar)}
+  .tile .rar-pill{position:absolute;top:10px;right:10px;font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+    text-transform:uppercase;color:#0a1316;background:var(--rar);border-radius:999px;padding:2px 7px;font-weight:700;opacity:.92}
+  .tile.unlogged .rar-pill{background:transparent;color:var(--muted2);border:1px solid var(--line)}
+  .art{display:grid;place-items:center;height:128px;margin:4px 0 6px}
+  .art svg{width:118px;height:130px}
+  .art svg{width:100%;height:100%}
+  .tile .nm{font-weight:700;font-size:14.5px;line-height:1.15;margin-top:2px}
+  .tile.unlogged .nm{color:var(--muted)}
+  .tile .sci{font-family:var(--mono);font-size:10.5px;color:var(--muted2);font-style:italic;margin-top:3px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tile .seen-tag{display:none;align-items:center;gap:5px;margin-top:8px;font-family:var(--mono);font-size:10px;
+    letter-spacing:.04em;color:var(--good)}
+  .tile.logged .seen-tag{display:flex}
+  .tile .seen-tag .chk{width:14px;height:14px;border-radius:50%;background:var(--good);display:grid;place-items:center;color:#06120b;font-size:9px;font-weight:900}
+  .tile.unlogged .qmark{position:absolute;right:14px;bottom:42px;font-size:30px;font-weight:800;color:var(--sil);opacity:.55}
+  .tile.just-logged{animation:pulse 1.1s ease}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(230,152,47,.55)}100%{box-shadow:0 0 0 16px rgba(230,152,47,0)}}
+
+  /* ---------- Modal ---------- */
+  .scrim{position:fixed;inset:0;background:rgba(5,9,11,.66);backdrop-filter:blur(3px);display:none;
+    align-items:flex-start;justify-content:center;padding:24px 14px;z-index:50;overflow:auto}
+  .scrim.open{display:flex}
+  .modal{width:min(680px,100%);background:linear-gradient(180deg,var(--ink2),#0e171c);border:1px solid var(--line);
+    border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.6);overflow:hidden;position:relative;animation:rise .28s cubic-bezier(.22,1,.36,1)}
+  @keyframes rise{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
+  .m-top{display:flex;gap:16px;padding:18px 18px 14px;border-bottom:1px solid var(--line);position:relative}
+  .m-art{flex:0 0 168px;height:168px;border-radius:14px;display:grid;place-items:center;
+    background:radial-gradient(120px 120px at 50% 40%, color-mix(in srgb, var(--rar) 26%, transparent), transparent 70%), #0c1418;
+    border:1px solid var(--tile-edge)}
+  .m-art svg{width:148px;height:148px}
+  .m-head{flex:1;min-width:0}
+  .m-head .num{font-family:var(--mono);font-size:12px;color:var(--rar);letter-spacing:.1em}
+  .m-head h2{margin:4px 0 2px;font-size:23px;font-weight:800;line-height:1.05}
+  .m-head .pt{color:var(--amber-soft);font-size:13px;margin:0 0 2px}
+  .m-head .sci{font-family:var(--mono);font-style:italic;color:var(--muted);font-size:12.5px}
+  .m-head .fam{font-family:var(--mono);font-size:11px;color:var(--muted2);letter-spacing:.04em;margin-top:4px}
+  .rar-badge{display:inline-block;margin-top:9px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    color:#0a1316;background:var(--rar);border-radius:999px;padding:3px 10px;font-weight:700}
+  .typechips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+  .tchip{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:var(--text);background:#0e1a20;border:1px solid var(--tile-edge);border-radius:7px;padding:3px 8px}
+  .closeb{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:9px;border:1px solid var(--line);
+    background:#0d171c;color:var(--muted);font-size:18px;cursor:pointer;line-height:1}
+  .closeb:hover{color:var(--text)}
+
+  .m-body{padding:16px 18px 20px}
+  .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:14px}
+  .stat{background:var(--ink2);padding:10px 12px}
+  .stat .k{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2)}
+  .stat .v{font-size:13.5px;margin-top:2px}
+  .desc{font-size:14.5px;color:#d3dde0;margin:2px 0 14px}
+  .funfact{font-size:13px;color:var(--amber-soft);background:rgba(230,152,47,.07);border-left:2px solid var(--amber);
+    padding:9px 12px;border-radius:0 8px 8px 0;margin:0 0 14px}
+  .funfact b{color:var(--amber)}
+  .med{display:flex;gap:10px;align-items:flex-start;border-radius:12px;padding:11px 13px;margin-bottom:16px;font-size:13.5px;border:1px solid}
+  .med .ic{flex:0 0 auto;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:12px;margin-top:1px}
+  .med.harmless{background:rgba(92,191,135,.08);border-color:rgba(92,191,135,.3)} .med.harmless .ic{background:var(--good);color:#06120b}
+  .med.minor{background:rgba(227,167,63,.08);border-color:rgba(227,167,63,.3)} .med.minor .ic{background:var(--warn);color:#1c1304}
+  .med.significant{background:rgba(229,113,99,.09);border-color:rgba(229,113,99,.35)} .med.significant .ic{background:var(--danger);color:#1c0805}
+  .med .lvl{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:2px}
+
+  .logbox{border:1px solid var(--line);border-radius:12px;padding:14px;background:#0d171c}
+  .logbox h3{margin:0 0 4px;font-size:14px;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .logged-state{display:flex;align-items:center;gap:8px;color:var(--good);font-size:13px;font-family:var(--mono);margin-bottom:10px}
+  .field{margin:9px 0}
+  .field label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted2);margin-bottom:4px}
+  .field input, .field textarea{width:100%;background:var(--tile);border:1px solid var(--tile-edge);border-radius:9px;
+    color:var(--text);font-family:var(--display);font-size:13.5px;padding:9px 11px;outline:none}
+  .field input:focus,.field textarea:focus{border-color:var(--azulejo)}
+  .field textarea{resize:vertical;min-height:54px}
+  .logactions{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+  .btn{font-family:var(--display);font-weight:700;font-size:13.5px;border-radius:10px;padding:10px 16px;cursor:pointer;border:1px solid transparent}
+  .btn.primary{background:var(--amber);color:#0a1316} .btn.primary:hover{filter:brightness(1.06)}
+  .btn.sub{background:transparent;border-color:var(--line);color:var(--text)} .btn.sub:hover{border-color:var(--azulejo-deep)}
+  .btn.danger{background:transparent;border-color:rgba(229,113,99,.4);color:var(--danger)} .btn.danger:hover{background:rgba(229,113,99,.08)}
+  .btn:focus-visible{outline:2px solid var(--azulejo);outline-offset:2px}
+
+  /* stamp */
+  .stamp{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-12deg) scale(.4);
+    font-family:var(--mono);font-weight:800;letter-spacing:.18em;font-size:34px;color:var(--good);
+    border:4px solid var(--good);border-radius:12px;padding:8px 18px;opacity:0;pointer-events:none;z-index:5;
+    text-transform:uppercase;background:rgba(8,18,11,.35)}
+  .stamp.go{animation:stamp 1.25s ease forwards}
+  @keyframes stamp{0%{opacity:0;transform:translate(-50%,-50%) rotate(-12deg) scale(.4)}
+    18%{opacity:1;transform:translate(-50%,-50%) rotate(-12deg) scale(1.05)}
+    30%{transform:translate(-50%,-50%) rotate(-12deg) scale(1)}
+    78%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) rotate(-12deg) scale(1)}}
+
+  /* toast */
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:#16232a;
+    border:1px solid var(--amber-soft);color:var(--text);padding:11px 16px;border-radius:11px;font-size:13.5px;
+    box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.3s;z-index:80;max-width:90vw}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast b{color:var(--amber)}
+
+  /* about modal reuse */
+  .about p{font-size:13.5px;color:#cfd9dc;margin:0 0 10px}
+  .about .src{font-family:var(--mono);font-size:11px;color:var(--muted2);word-break:break-word}
+
+  footer{margin-top:34px;border-top:1px solid var(--line);padding-top:16px;color:var(--muted2);font-size:12px;display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+  footer .lk{font-family:var(--mono);letter-spacing:.04em}
+
+  .empty{text-align:center;color:var(--muted);padding:50px 10px;font-size:14px}
+
+  @media (max-width:520px){
+    .stats{grid-template-columns:1fr 1fr}
+    .m-top{flex-direction:column}
+    .m-art{flex-basis:auto;width:120px;height:120px}
+    .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:11px}
+    .vivbar{flex-wrap:wrap}
+    .vivcount{flex:1 1 100%}
+    .petcard{width:170px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+  }
+  /* ---------- in-season strip ---------- */
+  .inseason{margin:2px 0 14px}
+  .ish{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
+  .ismonth{font-family:var(--mono);font-size:12px;color:var(--amber-soft)}
+  .isrow{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 8px;scrollbar-width:thin}
+  .iscard{flex:0 0 auto;width:104px;background:var(--tile);border:1px solid var(--tile-edge);border-radius:12px;
+    padding:8px;cursor:pointer;color:inherit;font:inherit;text-align:center;position:relative;overflow:hidden;transition:transform .16s,border-color .16s,box-shadow .16s}
+  .iscard::before{content:"";position:absolute;left:0;top:0;height:3px;width:100%;background:var(--rar,#6b8088);opacity:.85}
+  .iscard:hover{transform:translateY(-2px);border-color:var(--rar);box-shadow:var(--shadow)}
+  .iscard:focus-visible{outline:2px solid var(--azulejo);outline-offset:2px}
+  .isart{display:block;height:62px}
+  .isart svg{width:100%;height:100%;opacity:.9}
+  .isnm{display:block;font-size:11.5px;font-weight:700;line-height:1.15;margin-top:4px;color:var(--muted)}
+  .israr{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--rar);margin-top:3px}
+
+  /* ---------- favourite star (tiles) ---------- */
+  .favstar{position:absolute;right:9px;bottom:8px;font-size:16px;line-height:1;color:var(--muted2);cursor:pointer;
+    z-index:3;padding:2px;border-radius:6px;transition:.15s}
+  .favstar:hover{color:var(--amber);transform:scale(1.12)}
+  .favstar.on{color:var(--amber)}
+
+  /* ---------- modal: xp chip, endemic, fav button ---------- */
+  .xp-chip{display:inline-block;margin:9px 0 0 6px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;
+    color:var(--amber);background:rgba(230,152,47,.1);border:1px solid rgba(230,152,47,.3);border-radius:999px;padding:3px 9px;vertical-align:middle}
+  .endemic-badge{display:inline-block;margin:9px 0 0 6px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;
+    color:#0a1316;background:var(--good);border-radius:999px;padding:3px 9px;font-weight:700;vertical-align:middle}
+  .favbtn{margin-top:10px;display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;letter-spacing:.04em;
+    color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;transition:.15s}
+  .favbtn:hover{color:var(--text);border-color:var(--amber-soft)}
+  .favbtn.on{color:var(--amber);border-color:var(--amber-soft);background:rgba(230,152,47,.08)}
+
+  /* ---------- numbers / size bar / phenology ---------- */
+  .numbers{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:14px;background:#0d171c}
+  .numrow{display:flex;align-items:center;gap:12px;margin-bottom:9px}
+  .numlabel{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted2);flex:0 0 auto;min-width:96px}
+  .sizebar{flex:1;height:8px;background:#0b1418;border:1px solid var(--tile-edge);border-radius:999px;overflow:hidden}
+  .sizebar i{display:block;height:100%;background:linear-gradient(90deg,var(--azulejo-deep),var(--azulejo));border-radius:999px}
+  .numval{font-family:var(--mono);font-size:12px;color:var(--text);flex:0 0 auto;min-width:62px;text-align:right}
+  .numval2{font-size:13px;color:#d3dde0}
+  .phen{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:2px}
+  .months{display:flex;gap:4px;flex-wrap:wrap}
+  .mdot{width:18px;height:18px;border-radius:5px;display:grid;place-items:center;font-family:var(--mono);font-size:9px;
+    color:var(--muted2);background:#0b1418;border:1px solid var(--tile-edge)}
+  .mdot.on{color:#08110f;background:var(--azulejo);border-color:var(--azulejo);font-weight:700}
+  .mdot.now{box-shadow:0 0 0 2px rgba(230,152,47,.6)}
+
+  /* ---------- lore (name / id tip) ---------- */
+  .lore{display:flex;flex-direction:column;gap:8px;margin:0 0 14px}
+  .loreitem{display:flex;gap:10px;font-size:13px;color:#cdd7da}
+  .lk2{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--amber-soft);flex:0 0 auto;min-width:86px;padding-top:1px}
+
+  /* ---------- stats dashboard ---------- */
+  .statshd{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px}
+  .statbars{display:flex;flex-direction:column;gap:7px}
+  .statbar{display:flex;align-items:center;gap:10px}
+  .sbl{flex:0 0 auto;min-width:108px;font-size:12px;color:#cdd7da}
+  .sbtrack{flex:1;height:9px;background:#0b1418;border:1px solid var(--tile-edge);border-radius:999px;overflow:hidden}
+  .sbtrack i{display:block;height:100%;border-radius:999px;opacity:.9}
+  .sbv{flex:0 0 auto;font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+  /* ---------- confetti ---------- */
+  .confetti{position:fixed;inset:0;pointer-events:none;z-index:120;overflow:hidden}
+  .confetti i{position:absolute;top:-14px;width:9px;height:14px;border-radius:2px;opacity:.95;animation:fall 2.4s linear forwards}
+  @keyframes fall{0%{transform:translateY(-14px) rotate(var(--rot,0deg))}100%{transform:translateY(104vh) rotate(calc(var(--rot,0deg) + 360deg))}}
+
+  /* ===================================================================
+     16-BIT UI THEME  (cosmetic layer — overrides the look, not layout)
+     =================================================================== */
+  :root{
+    --pixel:"Press Start 2P", ui-monospace, "Cascadia Mono", monospace;
+    --mono:"VT323", ui-monospace, "SF Mono", "Cascadia Mono", monospace;
+    --amber:#f3aa33; --amber-soft:#d4a85e; --azulejo:#56a8dd; --good:#62d491; --danger:#ef7a6b;
+    --line:#2e444c;
+    --bevelD:inset -3px -3px 0 rgba(0,0,0,.5);
+    --bevelL:inset 3px 3px 0 rgba(255,255,255,.06);
+    --hardsh:3px 3px 0 rgba(0,0,0,.5);
+  }
+  /* keep pixel art crisp when scaled */
+  .art svg, .m-art svg, .isart svg{ image-rendering:pixelated; image-rendering:crisp-edges; }
+
+  /* faint pixel-grid backdrop */
+  body{
+    background:
+      repeating-linear-gradient(0deg, rgba(255,255,255,.022) 0 1px, transparent 1px 4px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.018) 0 1px, transparent 1px 4px),
+      radial-gradient(900px 500px at 85% -8%, rgba(86,168,221,.10), transparent 60%),
+      radial-gradient(700px 420px at -5% 6%, rgba(243,170,51,.07), transparent 55%),
+      var(--ink);
+  }
+
+  /* pixel title */
+  .brand h1{ font-family:var(--pixel); font-weight:400; font-size:clamp(15px,4vw,27px);
+    line-height:1.32; letter-spacing:0; text-shadow:3px 3px 0 rgba(0,0,0,.55); margin:.3em 0 .35em; }
+  .brand h1 .web{ color:var(--amber); }
+
+  /* retro terminal labels become a touch larger so VT323 stays legible */
+  .eyebrow,.rar-pill,.israr,.bd,.k,.lvl,.numlabel,.lk2,.field label,.seen-tag,.statshd,.tax,.gt{ font-size:12.5px; }
+  .num,.pip,.tchip,.sbv,.sbl,.next,.rar-badge,.count,.ismonth,.xp-chip,.endemic-badge{ font-size:13px; }
+  .chip,select.sort,.ghostbtn{ font-size:13px; }
+  .rankbox .rank-name{ font-size:19px; }
+  .logbox h3{ font-size:15px; }
+
+  /* square every rounded element for a blocky 16-bit feel */
+  .rankbox,.meter,.meter>i,.pip,.badge,.badge .glyph,.search,.chip,select.sort,.ghostbtn,
+  .tile,.art,.m-art,.modal,.closeb,.rar-badge,.rar-pill,.tchip,.btn,.logbox,.field input,
+  .field textarea,.med,.med .ic,.funfact,.toast,.stats,.stat,.numbers,.sizebar,.sizebar i,
+  .mdot,.lore,.statbars,.sbtrack,.sbtrack i,.iscard,.isart,.xp-chip,.endemic-badge,.favbtn,
+  .seen-tag .chk,.gloss{ border-radius:2px !important; }
+
+  /* beveled panels */
+  .rankbox{ border:2px solid var(--line); box-shadow:var(--bevelD),var(--bevelL),var(--shadow); }
+  .numbers,.logbox,.med,.funfact,.stats{ border:2px solid var(--line); box-shadow:var(--bevelD); }
+  .modal{ border:3px solid var(--line); box-shadow:0 0 0 2px #000, 0 18px 60px rgba(0,0,0,.6); }
+  .m-art{ border:2px solid var(--tile-edge); box-shadow:var(--bevelD); }
+
+  /* tiles as cartridge-like cards */
+  .tile{ border:2px solid var(--tile-edge); box-shadow:var(--bevelD),var(--bevelL); }
+  .tile::before{ height:4px; }
+  .tile:hover{ transform:translateY(-3px); box-shadow:var(--bevelD),var(--bevelL),0 0 0 2px var(--rar,#37505a); }
+  .iscard{ border:2px solid var(--tile-edge); box-shadow:2px 2px 0 rgba(0,0,0,.45); }
+  .iscard::before{ height:4px; }
+
+  /* inputs / search / select */
+  .search,select.sort,.field input,.field textarea{ border:2px solid var(--tile-edge); box-shadow:var(--bevelD); }
+
+  /* chips + ghost buttons: pressable */
+  .chip,.ghostbtn{ border:2px solid var(--tile-edge); box-shadow:var(--hardsh); text-transform:uppercase; }
+  .chip:hover,.ghostbtn:hover{ transform:translate(-1px,-1px); box-shadow:4px 4px 0 rgba(0,0,0,.5); }
+  .chip:active,.ghostbtn:active{ transform:translate(3px,3px); box-shadow:none; }
+  .chip[aria-pressed="true"]{ box-shadow:inset 3px 3px 0 rgba(0,0,0,.4); border-color:var(--amber); }
+
+  /* primary / action buttons */
+  .btn{ border:2px solid rgba(0,0,0,.55); box-shadow:var(--hardsh); }
+  .btn:hover{ transform:translate(-1px,-1px); box-shadow:4px 4px 0 rgba(0,0,0,.55); }
+  .btn:active{ transform:translate(3px,3px); box-shadow:none; }
+
+  /* badges */
+  .badge{ border-width:2px; box-shadow:2px 2px 0 rgba(0,0,0,.45); }
+  .badge.earned{ box-shadow:2px 2px 0 rgba(0,0,0,.45), 0 0 0 1px rgba(243,170,51,.25); }
+
+  /* close button */
+  .closeb{ border:2px solid var(--line); box-shadow:2px 2px 0 rgba(0,0,0,.45); position:absolute; z-index:8; cursor:pointer; }
+  .closeb:active{ transform:translate(2px,2px); box-shadow:none; }
+
+  /* segmented meters + bars (health-bar look) */
+  .meter,.sizebar,.sbtrack{ border:2px solid #0a1316; }
+  .meter>i,.sizebar i,.sbtrack i{ border-radius:0 !important;
+    background-image:repeating-linear-gradient(90deg, rgba(0,0,0,.22) 0 2px, transparent 2px 7px); }
+  .mdot{ border-width:2px; }
+
+  /* taxonomy line in modal header */
+  .tax{ font-family:var(--mono); color:var(--muted2); letter-spacing:.04em; margin-top:3px; }
+
+  /* glossary rows */
+  .gloss{ display:flex; flex-direction:column; gap:2px; padding:9px 0; border-bottom:1px solid var(--line); }
+  .gloss:last-child{ border-bottom:0; }
+  .gt{ font-family:var(--mono); letter-spacing:.06em; text-transform:uppercase; color:var(--amber-soft); }
+  .gd{ font-size:13.5px; color:#cdd7da; }
+
+  /* footer reset link as a little button */
+  footer .lk{ border:2px solid var(--line); box-shadow:2px 2px 0 rgba(0,0,0,.4); border-radius:2px; padding:5px 10px; }
+
+  /* ---- view tabs ---- */
+  .tabs{ display:flex; gap:8px; margin:2px 0 16px; }
+  .tab{ font-family:var(--mono); font-size:14px; letter-spacing:.05em; text-transform:uppercase;
+    color:var(--muted); background:var(--ink2); border:2px solid var(--tile-edge); border-radius:2px;
+    padding:8px 15px; cursor:pointer; box-shadow:var(--hardsh); }
+  .tab:hover{ transform:translate(-1px,-1px); box-shadow:4px 4px 0 rgba(0,0,0,.5); }
+  .tab:active{ transform:translate(3px,3px); box-shadow:none; }
+  .tab[aria-pressed="true"]{ color:#08110f; background:var(--amber); border-color:var(--amber); }
+
+  /* ---- vivarium ---- */
+  .vivarium{ margin-top:2px; }
+  .vivbar{ display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+  .vivcount{ font-family:var(--mono); font-size:15px; color:var(--amber); flex:1; }
+  .tank{ position:relative; height:min(64vh,560px); border:3px solid var(--line); border-radius:3px;
+    overflow:hidden; box-shadow:var(--bevelD), inset 0 0 70px rgba(0,0,0,.55);
+    background:linear-gradient(180deg,#102a30 0%, #102025 55%, #1b2c1e 56%, #21311f 100%); }
+  .tank .glass{ position:absolute; inset:0; pointer-events:none;
+    background:linear-gradient(115deg, rgba(255,255,255,.07) 0 11%, transparent 11% 17%, rgba(255,255,255,.035) 17% 21%, transparent 21%); }
+  .tank::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:13%; pointer-events:none;
+    background:repeating-linear-gradient(90deg,#24391f 0 6px,#1f311c 6px 12px); opacity:.92;
+    box-shadow:inset 0 3px 0 rgba(0,0,0,.3); }
+  .plant{ position:absolute; left:7%; bottom:11%; width:40px; height:34%; pointer-events:none; opacity:.95;
+    background:linear-gradient(90deg, transparent 0 26%, #2f6b3a 26% 34%, transparent 34% 58%, #3a8a4c 58% 66%, transparent 66% 86%, #2c6b39 86% 94%, transparent 94%);
+    border-radius:40% 40% 0 0 / 18% 18% 0 0; }
+  .tankweb{ position:absolute; right:-6px; top:-6px; width:96px; height:96px; pointer-events:none; opacity:.45;
+    background:repeating-linear-gradient(45deg, rgba(255,255,255,.09) 0 1px, transparent 1px 11px),
+               repeating-linear-gradient(-45deg, rgba(255,255,255,.06) 0 1px, transparent 1px 13px); }
+  .vivempty{ position:absolute; inset:0; display:grid; place-items:center; text-align:center; padding:24px;
+    color:var(--muted); font-size:15px; max-width:34ch; margin:auto; }
+  .vivempty[hidden]{ display:none; }
+  .resident{ position:absolute; left:0; top:0; width:54px; height:64px; border:0; background:transparent; padding:0;
+    cursor:pointer; transition:transform 4s ease-in-out; will-change:transform; z-index:1; display:flex;
+    flex-direction:column; align-items:center; }
+  .resident svg{ width:54px; height:54px; image-rendering:pixelated; image-rendering:crisp-edges;
+    filter:drop-shadow(0 3px 2px rgba(0,0,0,.45)); }
+  .resident:hover{ z-index:3; }
+  .resident:focus-visible{ outline:2px solid var(--amber); outline-offset:2px; }
+  .resident.skitter{ transition-timing-function:steps(9); }
+  .resident.poked{ animation:poke .4s ease; }
+  @keyframes poke{ 0%,100%{transform:scale(1) translateY(0)} 35%{transform:scale(1.12) translateY(-4px)} }
+  .resident.social::after{ content:"\1F44B"; position:absolute; top:-14px; font-size:13px; animation:popfade 1.1s ease forwards; }
+  @keyframes popfade{ 0%{opacity:0; transform:translateY(4px)} 25%{opacity:1; transform:translateY(0)} 100%{opacity:0; transform:translateY(-8px)} }
+  .vbars{ width:40px; margin-top:1px; display:flex; flex-direction:column; gap:2px; pointer-events:none; }
+  .vbar{ height:3px; border-radius:2px; background:rgba(0,0,0,.45); overflow:hidden; }
+  .vbar i{ display:block; height:100%; border-radius:2px; }
+  .vbar.hunger i{ background:#d8a23a; }
+  .vbar.mood i{ background:#5fb88a; }
+  .fly{ position:absolute; width:6px; height:6px; border-radius:50%; background:#dde4e8;
+    box-shadow:0 0 5px rgba(255,255,255,.7); z-index:2; pointer-events:none; }
+
+  /* care popover */
+  .petcard{ position:absolute; width:200px; background:#0c1418; border:1px solid var(--tile-edge); border-radius:10px;
+    padding:10px 12px; box-shadow:var(--bevelD); z-index:5; font-family:var(--mono); color:var(--ink); }
+  .petcard h4{ margin:0 0 2px; font-size:14px; color:#fff; font-family:var(--display); }
+  .petcard .pclevel{ font-size:11px; color:var(--amber); margin-bottom:8px; }
+  .petcard .pcrow{ display:flex; align-items:center; gap:6px; font-size:11px; color:var(--muted2); margin-bottom:4px; }
+  .petcard .pcbar{ flex:1; height:6px; border-radius:3px; background:rgba(255,255,255,.08); overflow:hidden; }
+  .petcard .pcbar i{ display:block; height:100%; border-radius:3px; }
+  .petcard .pcactions{ display:flex; gap:6px; margin-top:8px; }
+  .petcard .pcactions button{ flex:1; }
+  .roster-modal{ max-width:520px; }
+  .roster-list{ display:flex; flex-direction:column; gap:6px; max-height:50vh; overflow:auto; margin:14px 0; }
+  .roster-row{ display:flex; align-items:center; gap:10px; padding:8px 10px; border:1px solid var(--line); border-radius:8px; }
+  .roster-row.checked{ border-color:var(--amber); }
+  .roster-row .rart{ width:36px; height:40px; flex:0 0 auto; }
+  .roster-row .rart svg{ width:36px; height:40px; image-rendering:pixelated; }
+  .roster-row .rname{ flex:1; font-size:14px; }
+  .roster-row .rsub{ font-family:var(--mono); font-size:11px; color:var(--muted2); }
+
+
+  /* ---------- iNaturalist photo, stat & seasonality ---------- */
+  .inatfig{margin:0 0 14px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--ink2)}
+  .inatfig a{display:block;line-height:0}
+  .inatfig img{display:block;width:100%;height:auto;max-height:300px;object-fit:cover}
+  .inatcap{font-family:var(--mono);font-size:11px;color:var(--muted2);padding:7px 11px;line-height:1.5}
+  .inatcap a{color:var(--azulejo);text-decoration:none}
+  .inatcap a:hover{text-decoration:underline}
+  .inatlink{color:var(--azulejo);text-decoration:none;border-bottom:1px dotted currentColor}
+  .inatlink:hover{border-bottom-style:solid}
+  .inatphen{margin-top:10px}
+  .inatbars{display:flex;gap:3px;align-items:flex-end;height:48px;margin-top:6px}
+  .inbar{flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
+  .inbar i{display:block;width:100%;max-width:15px;background:var(--azulejo);border-radius:3px 3px 0 0;min-height:1px;opacity:.8}
+  .inbar b{font-family:var(--mono);font-weight:400;font-size:8.5px;color:var(--muted2);margin-top:3px}
+  .inbar.now i{background:var(--amber);opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <span class="eyebrow">Field catalogue · Portugal</span>
+      <h1>Aracn&aacute;rio<span class="web">.</span></h1>
+      <p class="sub">A pocket guide to spiders you might meet in Portugal. Tap a species to read about it, then log it once you&rsquo;ve spotted it in the wild. Your sightings are remembered between visits.</p>
+    </div>
+    <div class="rankbox" id="rankbox">
+      <div class="rk"><span class="rank-name" id="rankName">&mdash;</span><span class="count" id="rankCount">0 / 45</span></div>
+      <div class="meter"><i id="rankMeter" style="width:0%"></i></div>
+      <div class="next" id="rankNext"></div>
+      <div class="breakdown" id="breakdown"></div>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs" role="tablist" aria-label="View">
+    <button class="tab" data-view="cat" aria-pressed="true">&#9638; Catalogue</button>
+    <button class="tab" data-view="viv" aria-pressed="false">&#9635; Vivarium</button>
+  </nav>
+
+  <div class="ach-row" id="achRow" aria-label="Achievements"></div>
+
+  <section class="inseason" id="inseasonWrap" hidden>
+    <div class="ish"><span class="eyebrow">Look out for &mdash; in season now</span><span class="ismonth" id="isMonth"></span></div>
+    <div class="isrow" id="inseason"></div>
+  </section>
+
+  <div class="controls" id="controls">
+    <label class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="search" type="search" placeholder="Search name or family&hellip;" autocomplete="off" aria-label="Search species">
+    </label>
+    <div class="chips" id="chips" role="group" aria-label="Filter">
+      <button class="chip" data-filter="all" aria-pressed="true">All</button>
+      <button class="chip" data-filter="logged" aria-pressed="false">Logged</button>
+      <button class="chip" data-filter="unlogged" aria-pressed="false">Not yet</button>
+      <button class="chip" data-filter="fav" aria-pressed="false">&#9733; Favourites</button>
+      <button class="chip" data-filter="nearby" aria-pressed="false" title="Spiders recorded near your current location">&#9678; Near me</button>
+    </div>
+    <select class="sort" id="sort" aria-label="Sort">
+      <option value="num">Sort: Dex no.</option>
+      <option value="name">Sort: Name</option>
+      <option value="rarity">Sort: Rarity</option>
+      <option value="fam">Sort: Family</option>
+      <option value="size">Sort: Size</option>
+    </select>
+    <button class="ghostbtn" id="statsBtn">Stats</button>
+    <button class="ghostbtn" id="glossaryBtn">Glossary</button>
+    <button class="ghostbtn" id="aboutBtn">About the data</button>
+  </div>
+
+  <p class="count-line" id="countLine"></p>
+  <div class="grid" id="grid"></div>
+
+  <section class="vivarium" id="vivariumView" hidden>
+    <div class="vivbar">
+      <span class="eyebrow">Vivarium</span>
+      <span class="vivcount" id="vivCount"></span>
+      <button class="ghostbtn" id="rosterBtn">Manage residents</button>
+      <button class="ghostbtn" id="feedBtn">Toss a fly</button>
+    </div>
+    <div class="tank" id="tank" aria-label="Your vivarium">
+      <div class="glass"></div>
+      <div class="plant"></div>
+      <div class="tankweb" aria-hidden="true"></div>
+      <p class="vivempty" id="vivEmpty" hidden>Bring a few favourites into the vivarium with &ldquo;Manage residents&rdquo; and they&rsquo;ll move in.</p>
+      <div class="petcard" id="petCard" hidden></div>
+    </div>
+    <p class="src">Tap a resident to feed, pet and check on it. They wander and sometimes greet each other on their own.</p>
+  </section>
+
+  <footer id="footnote">
+    <span>Aracn&aacute;rio &mdash; a learning aid, not an identification key or medical guide.</span>
+    <span class="lk" id="resetBtn" role="button" tabindex="0" style="cursor:pointer">Reset my log</span>
+  </footer>
+</div>
+
+<!-- Species detail modal -->
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="m-title">
+  <div class="modal" id="modal"></div>
+</div>
+
+<!-- Vivarium roster picker -->
+<div class="scrim" id="rosterScrim" role="dialog" aria-modal="true" aria-labelledby="roster-title">
+  <div class="modal roster-modal" id="rosterModal"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ?v= is a cache-buster: bump APP_VER (here and in sw.js) on any src/* change so
+     browsers and the service worker fetch the new modules instead of stale copies. -->
+<script src="src/db.js?v=p14"></script>
+<script src="src/inat.js?v=p14"></script>
+<script src="src/adapt.js?v=p14"></script>
+<script src="src/sprites.js?v=p14"></script>
+<script>
+/* ============================================================
+   ARACNÁRIO — spiders of Portugal
+   Persistent, gamified catalogue. Data grounded in general
+   references (Wikipedia, iNaturalist, araneae.nmbe.ch country
+   list) + Acta Médica Portuguesa for medical significance.
+   Art is stylised, not to scale, and not for identification.
+   ============================================================ */
+
+const RARITY = {
+  common:   {label:'Common',    color:'#8fa3b0', order:1},
+  uncommon: {label:'Uncommon',  color:'#4892c2', order:2},
+  rare:     {label:'Rare',      color:'#e6982f', order:3},
+  veryrare: {label:'Very Rare', color:'#e57163', order:4},
+  legendary:{label:'Legendary', color:'#d6b33a', order:5},
+  mythic:   {label:'Mythic',    color:'#79cfc6', order:6},
+};
+const TYPES = {
+  orb:'Orb-weaver', tangle:'Tangle-web', funnel:'Funnel-web', tube:'Tube-web',
+  jumper:'Jumper', crab:'Crab spider', huntsman:'Huntsman', wolf:'Wolf spider',
+  recluse:'Recluse', specialist:'Specialist'
+};
+
+/* medical levels:
+   harmless  -> not medically significant
+   minor     -> bite can be painful but not dangerous
+   significant -> documented local medical significance */
+let SPECIES = [];                       // live catalogue, built from iNaturalist at load (see bootstrap)
+/* Legacy static dataset — retained ONLY as an offline fallback and to migrate old saved
+   logs (old numeric id -> iNat taxon id). Not shown when live data is available. */
+const _LEGACY_SPECIES = [
+  { id:1, num:'001', en:'Cross Orbweaver', pt:'Aranha-da-cruz', sci:'Araneus diadematus', fam:'Araneidae',
+    type:'orb', habitatTag:'gardens', rarity:'common', noct:false,
+    size:'Female 6.5–20 mm · male 5.5–13 mm', active:'Day & night', web:'Vertical orb web (often rebuilt daily)',
+    habitat:'Gardens, hedgerows, woodland edges, near outdoor lights', diet:'Flying insects',
+    region:'Common and widespread across mainland Portugal',
+    desc:'One of the most recognisable garden spiders. A white cross of spots marks the abdomen, whose base colour ranges from pale yellow to dark grey-brown. It usually hangs head-down at the centre of its web.',
+    medical:{level:'harmless', text:'Not medically significant. Reluctant to bite; any bite is trivial.'},
+    fact:'Also called the European garden spider or cross spider.',
+    art:{body:'#7a5a3c', leg:'#5f4530', style:'orb', abd:'round', marking:'cross', eyes:'norm'} },
+
+  { id:2, num:'002', en:'Long-bodied Cellar Spider', pt:'Aranha-das-adegas', sci:'Pholcus phalangioides', fam:'Pholcidae',
+    type:'tangle', habitatTag:'indoors', rarity:'common', noct:true,
+    size:'Body 7–10 mm · legs far longer', active:'Night', web:'Loose, irregular web in ceiling corners',
+    habitat:'Indoors — corners, cellars, ceilings, sheds', diet:'Insects and other spiders',
+    region:'Abundant inside Portuguese homes',
+    desc:'The classic "daddy long-legs" of the house corner: a tiny body slung beneath extraordinarily long, thread-thin legs. When disturbed it whirls itself in the web into a blur.',
+    medical:{level:'harmless', text:'Not medically significant. A long-standing myth claims it is highly venomous — it is not.'},
+    fact:'It leaves its own web to hunt and eat other spiders.',
+    art:{body:'#cdbfa8', leg:'#b6a892', style:'long', abd:'elong', marking:'none', eyes:'norm'} },
+
+  { id:3, num:'003', en:'Nursery Web Spider', pt:'Aranha-creche', sci:'Pisaura mirabilis', fam:'Pisauridae',
+    type:'wolf', habitatTag:'grassland', rarity:'common', noct:false,
+    size:'10–15 mm', active:'Day', web:'No snare web; builds a silk "nursery tent" for the young',
+    habitat:'Grassland, scrub, sunny low vegetation', diet:'Insects',
+    region:'Common in meadows and field margins',
+    desc:'A wandering hunter, often seen basking with its front legs held together. The female carries her large egg sac in her jaws, then spins a tent of silk and stands guard over the hatchlings.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'Courting males offer the female a silk-wrapped insect as a "nuptial gift" — and may play dead to escape afterwards.',
+    art:{body:'#9a7a4e', leg:'#7c6240', style:'wolf', abd:'oval', marking:'none', eyes:'norm'} },
+
+  { id:4, num:'004', en:'Giant House Spider', pt:'Aranha-das-casas', sci:'Eratigena spp.', fam:'Agelenidae',
+    type:'funnel', habitatTag:'indoors', rarity:'common', noct:true,
+    size:'Body 10–18 mm · large leg span', active:'Night', web:'Flat sheet web with a funnel-shaped retreat',
+    habitat:'Houses, sheds, garages, wall crevices', diet:'Insects',
+    region:'Common around and inside buildings',
+    desc:'The big, fast, leggy spider that turns up in baths and along skirting boards, especially in autumn when wandering males are on the move. Despite the startle factor, it is a harmless insect-hunter.',
+    medical:{level:'harmless', text:'Not medically significant. It runs from people rather than toward them.'},
+    fact:'It is found in bathtubs because it falls in chasing prey and cannot climb the smooth sides back out.',
+    art:{body:'#6b4f37', leg:'#54402d', style:'wolf', abd:'oval', marking:'none', eyes:'norm'} },
+
+  { id:5, num:'005', en:'Napoleon Spider', pt:'Aranha-Napoleão', sci:'Synema globosum', fam:'Thomisidae',
+    type:'crab', habitatTag:'flowers', rarity:'uncommon', noct:false,
+    size:'Female 7–8 mm · male 2–4 mm', active:'Day', web:'None — ambushes prey on flowers',
+    habitat:'Flowers in meadows, especially yellow and red umbels', diet:'Flower-visiting insects (bees, flies)',
+    region:'Widespread in sunny flowery habitats',
+    desc:'A rounded crab spider that lies in wait on blossoms with its long front legs spread like pincers. Females come in red, yellow or white forms, each with a dark abdominal mark.',
+    medical:{level:'harmless', text:'Not medically significant; fangs are too small to matter to humans.'},
+    fact:'Its name comes from the abdominal mark, said to resemble the silhouette of Napoleon in his hat.',
+    art:{body:'#d23b3b', leg:'#222', style:'crab', abd:'round', marking:'cap', eyes:'norm'} },
+
+  { id:6, num:'006', en:'Humped Orbweaver', pt:'Aranha-corcunda', sci:'Gibbaranea gibbosa', fam:'Araneidae',
+    type:'orb', habitatTag:'shrubs', rarity:'common', noct:true,
+    size:'Female ~5–8 mm', active:'Night (rests by day)', web:'Orb web',
+    habitat:'Shrubs, hedgerows, coastal scrub, woodland', diet:'Flying insects',
+    region:'Common, often along the coast',
+    desc:'A small orb-weaver with a pair of low humps near the front of a usually greenish abdomen — good camouflage among leaves where it rests during the day.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'The greenish tone helps it disappear against the foliage it shelters in.',
+    art:{body:'#8a9b6a', leg:'#6f7d54', style:'orb', abd:'round', marking:'humps', eyes:'norm'} },
+
+  { id:7, num:'007', en:'Wasp Spider', pt:'Aranha-vespa', sci:'Argiope bruennichi', fam:'Araneidae',
+    type:'orb', habitatTag:'grassland', rarity:'uncommon', noct:false,
+    size:'Female 13–17 mm · male 4–6 mm', active:'Day', web:'Orb web with a zig-zag silk band (stabilimentum)',
+    habitat:'Tall grass and low vegetation in warm, sunny spots', diet:'Grasshoppers and flying insects',
+    region:'Locally common in grassy habitats',
+    desc:'Unmistakable: the female wears bold yellow, black and white bands like a wasp. Her web carries a distinctive vertical zig-zag of dense silk through the middle.',
+    medical:{level:'harmless', text:'Not medically significant. A bite is rare and at most like a mild sting.'},
+    fact:'The wasp-like colours are thought to warn off birds, even though the spider is harmless.',
+    art:{body:'#e8c33a', leg:'#3a3320', style:'orb', abd:'oval', marking:'bands', eyes:'norm'} },
+
+  { id:8, num:'008', en:'Labyrinth Spider', pt:'Aranha-do-labirinto', sci:'Agelena labyrinthica', fam:'Agelenidae',
+    type:'funnel', habitatTag:'grassland', rarity:'common', noct:false,
+    size:'8–14 mm', active:'Day', web:'Horizontal sheet web with a funnel and maze-like retreat',
+    habitat:'Grassland, scrub and low bushes', diet:'Insects',
+    region:'Common in open grassy places',
+    desc:'It spins a broad sheet of silk over low vegetation, with a tubular retreat leading into a "labyrinth" of tunnels behind. The spider waits at the funnel mouth and rushes out when prey hits the sheet.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'The deep, branching retreat that gives the species its name is also where the female guards her egg sacs.',
+    art:{body:'#6f573c', leg:'#574431', style:'wolf', abd:'oval', marking:'none', eyes:'norm'} },
+
+  { id:9, num:'009', en:'Wall Jumping Spider', pt:'Saltícida-de-parede', sci:'Menemerus semilimbatus', fam:'Salticidae',
+    type:'jumper', habitatTag:'walls', rarity:'common', noct:false,
+    size:'5–8 mm', active:'Day', web:'None — uses silk safety lines while stalking',
+    habitat:'Sunny walls, tree trunks and buildings', diet:'Small insects',
+    region:'Very common on Mediterranean walls',
+    desc:'A flattened, greyish jumping spider that patrols sunlit walls, turning its big forward eyes to track prey before pouncing. Tame and inquisitive at close range.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'Jumping spiders have some of the sharpest vision of any animal their size.',
+    art:{body:'#8a8378', leg:'#6c665c', style:'compact', abd:'oval', marking:'none', eyes:'big'} },
+
+  { id:10, num:'010', en:'Pink Crab Spider', pt:'Aranha-caranguejo-rosa', sci:'Thomisus onustus', fam:'Thomisidae',
+    type:'crab', habitatTag:'flowers', rarity:'uncommon', noct:false,
+    size:'Female 7–10 mm · male ~3 mm', active:'Day', web:'None — ambushes prey on flowers',
+    habitat:'Heather and flowering scrub in sunny areas', diet:'Pollinating insects',
+    region:'Frequent in flowery scrub, especially in the south',
+    desc:'An angular crab spider with raised "shoulders" on the abdomen. Females may be pink, white or yellow and can slowly shift colour to match the flower they ambush from.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'Colour change to match a flower can take a few days, not seconds.',
+    art:{body:'#e7a9c4', leg:'#caa', style:'crab', abd:'round', marking:'humps', eyes:'norm'} },
+
+  { id:11, num:'011', en:'Lobed Argiope', pt:'Aranha-de-lóbulos', sci:'Argiope lobata', fam:'Araneidae',
+    type:'orb', habitatTag:'scrub', rarity:'uncommon', noct:false,
+    size:'Female 15–25 mm · male small', active:'Day', web:'Large orb web',
+    habitat:'Dry, sunny Mediterranean scrub', diet:'Larger flying insects',
+    region:'More common in the warm south',
+    desc:'A big, striking orb-weaver with a silvery abdomen edged in scalloped lobes, giving a crinkled, leaf-like outline. It sits openly at the hub of a large web in hot, dry places.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'The scalloped abdomen and silvery sheen make it look almost metallic in sunlight.',
+    art:{body:'#cfd6d8', leg:'#3a3a36', style:'orb', abd:'round', marking:'lobes', eyes:'norm'} },
+
+  { id:12, num:'012', en:'Green Huntsman', pt:'Aranha-verde', sci:'Micrommata virescens', fam:'Sparassidae',
+    type:'huntsman', habitatTag:'foliage', rarity:'uncommon', noct:false,
+    size:'Female 12–16 mm · male 7–10 mm', active:'Day', web:'None — an active hunter among leaves',
+    habitat:'Green vegetation, woodland edges and meadows', diet:'Insects',
+    region:'Widespread in leafy habitats',
+    desc:'A vivid grass-green spider that vanishes against foliage. It does not build a web but stalks prey across leaves; the male adds red and yellow stripes to his slimmer abdomen.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'It is one of the few truly bright-green spiders in Europe.',
+    art:{body:'#5fae5a', leg:'#3f8a3c', style:'huntsman', abd:'oval', marking:'none', eyes:'norm'} },
+
+  { id:13, num:'013', en:'Walnut Orbweaver', pt:'Aranha-de-casca', sci:'Nuctenea umbratica', fam:'Araneidae',
+    type:'orb', habitatTag:'bark', rarity:'uncommon', noct:true,
+    size:'Female 8–14 mm', active:'Night', web:'Orb web spun at night',
+    habitat:'Under bark, fences, walls and dead wood', diet:'Nocturnal insects',
+    region:'Common but easily overlooked',
+    desc:'A very flat, dark spider built to slip into narrow crevices in bark or fence posts by day. At dusk it emerges to build an orb web nearby, retreating again before dawn.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'Its strongly flattened body lets it wedge into cracks barely wider than a coin.',
+    art:{body:'#4a3f36', leg:'#352d26', style:'orb', abd:'flat', marking:'none', eyes:'norm'} },
+
+  { id:14, num:'014', en:'Spitting Spider', pt:'Aranha-cuspideira', sci:'Scytodes thoracica', fam:'Scytodidae',
+    type:'specialist', habitatTag:'indoors', rarity:'uncommon', noct:true,
+    size:'4–6 mm', active:'Night', web:'None — captures prey by spitting',
+    habitat:'Indoors and sheltered walls; slow-moving', diet:'Small insects and spiders',
+    region:'Widespread but quiet and nocturnal',
+    desc:'A pale, delicately patterned spider with a high domed front. It hunts by squirting a zig-zag of sticky, venom-laced gum over prey from a short distance, pinning it in place before approaching.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'It can spit its gluey trap from roughly a body-length away.',
+    art:{body:'#d8cba0', leg:'#bdb088', style:'recluse', abd:'round', marking:'none', eyes:'norm'} },
+
+  { id:15, num:'015', en:'Red Jumping Spider', pt:'Saltícida-vermelho', sci:'Philaeus chrysops', fam:'Salticidae',
+    type:'jumper', habitatTag:'rocky', rarity:'uncommon', noct:false,
+    size:'7–12 mm', active:'Day', web:'None',
+    habitat:'Warm rocky and grassy slopes in the sun', diet:'Insects',
+    region:'Locally common on sunny ground',
+    desc:'A bold jumping spider; the male has a brilliant red abdomen split by a black central band. Like all jumpers it tracks prey with large eyes and leaps to seize it.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'Males display their red colours and wave their legs in courtship "dances".',
+    art:{body:'#c43a2e', leg:'#2a2420', style:'compact', abd:'oval', marking:'maleStripe', eyes:'big'} },
+
+  { id:16, num:'016', en:'False Wolf Spider', pt:'Falsa-aranha-lobo', sci:'Zoropsis spinimana', fam:'Zoropsidae',
+    type:'wolf', habitatTag:'indoors', rarity:'rare', noct:true,
+    size:'10–19 mm', active:'Night', web:'None — a free-ranging hunter',
+    habitat:'Woodland; increasingly inside houses in the Mediterranean', diet:'Insects',
+    region:'Mediterranean; sometimes enters homes',
+    desc:'Often mistaken for a wolf spider, but in a different family. It is a large, patterned night-hunter that has adapted to living indoors, where it pursues prey across walls and floors.',
+    medical:{level:'minor', text:'Bites are rare and at most cause brief, localised pain — not medically dangerous.'},
+    fact:'Its move indoors has let it spread well beyond its original range.',
+    art:{body:'#7a6346', leg:'#5e4c36', style:'wolf', abd:'oval', marking:'none', eyes:'norm'} },
+
+  { id:17, num:'017', en:'Mediterranean Wolf Spider', pt:'Aranha-lobo', sci:'Hogna radiata', fam:'Lycosidae',
+    type:'wolf', habitatTag:'open ground', rarity:'rare', noct:false,
+    size:'Female up to ~25 mm', active:'Day & night', web:'None — a ground hunter, sometimes from a burrow',
+    habitat:'Dry open ground, scrub and sunny slopes', diet:'Insects and other invertebrates',
+    region:'Frequent in dry open country',
+    desc:'A large, robust wolf spider with a radiating pattern on the carapace. It chases prey across the ground rather than spinning a snare. The female carries her egg sac attached to her spinnerets, then the spiderlings ride on her back.',
+    medical:{level:'minor', text:'A bite can be painful but is not medically dangerous.'},
+    fact:'Old Mediterranean "tarantism" dances were often blamed on large wolf spiders like this.',
+    art:{body:'#6e5a44', leg:'#564631', style:'wolf', abd:'oval', marking:'none', eyes:'norm'} },
+
+  { id:18, num:'018', en:'Noble False Widow', pt:'Falsa-viúva-nobre', sci:'Steatoda nobilis', fam:'Theridiidae',
+    type:'tangle', habitatTag:'walls', rarity:'rare', noct:true,
+    size:'Female 8.5–14 mm', active:'Night', web:'Messy tangle (cobweb)',
+    habitat:'Walls, fences and around buildings', diet:'Insects',
+    region:'Established and spreading around towns',
+    desc:'A glossy, bulbous brown spider with a cream pattern on the abdomen that some see as a faint skull. Frequently confused with the true black widow, but far less serious.',
+    medical:{level:'minor', text:'Not dangerous. A bite can be painful with local swelling, broadly like a wasp sting; it usually settles on its own.'},
+    fact:'Despite alarming headlines, verified bites are uncommon and serious effects are rare.',
+    art:{body:'#5a4636', leg:'#473726', style:'orb', abd:'round', marking:'cream', eyes:'norm'} },
+
+  { id:19, num:'019', en:'Green-fanged Tube Web Spider', pt:'Aranha-de-tubo', sci:'Segestria florentina', fam:'Segestriidae',
+    type:'tube', habitatTag:'walls', rarity:'rare', noct:true,
+    size:'Female up to 22 mm · male up to 15 mm', active:'Night', web:'Tubular retreat with radiating trip-lines',
+    habitat:'Old walls and crevices, often near buildings', diet:'Nocturnal insects',
+    region:'Common around old stone and brickwork',
+    desc:'A glossy black spider that lives head-out in a silk tube wedged into a wall crack, with signal threads fanning from the entrance. Touch a thread and it strikes from the tube.',
+    medical:{level:'minor', text:'A bite can be painful but is not medically dangerous.'},
+    fact:'Its fangs (chelicerae) shine an iridescent metallic green.',
+    art:{body:'#1d1d1f', leg:'#101012', style:'tube', abd:'elong', marking:'none', eyes:'norm', fang:'green'} },
+
+  { id:20, num:'020', en:'Mediterranean Recluse', pt:'Aranha-violino', sci:'Loxosceles rufescens', fam:'Sicariidae',
+    type:'recluse', habitatTag:'indoors', rarity:'veryrare', noct:true,
+    size:'Body ~7–10 mm (legs longer)', active:'Night', web:'Irregular threads in undisturbed retreats',
+    habitat:'Dark, undisturbed places — behind furniture, storerooms, also urban indoors', diet:'Small insects',
+    region:'Present in Portugal, including towns; rarely encountered in the open',
+    desc:'A small, plain tan spider with long legs and a darker violin-shaped mark on the front body. It is shy and stays hidden, biting only when pressed against the skin — for instance inside clothing or bedding.',
+    medical:{level:'significant', text:'One of only two spiders of recognised medical significance in Portugal. Most bites are minor, but a bite can occasionally cause a slow-healing skin lesion (loxoscelism). Many wounds blamed on recluses are actually something else. If you are bitten and feel unwell, seek medical advice.'},
+    fact:'It has six eyes in three pairs — unusual among common spiders, which mostly have eight.',
+    art:{body:'#8a6a4e', leg:'#6e5440', style:'recluse', abd:'oval', marking:'violin', eyes:'norm'} },
+
+  { id:21, num:'021', en:'Mediterranean Black Widow', pt:'Viúva-negra-mediterrânica', sci:'Latrodectus tredecimguttatus', fam:'Theridiidae',
+    type:'tangle', habitatTag:'grassland', rarity:'veryrare', noct:true,
+    size:'Female 7–15 mm · male 4–7 mm', active:'Night', web:'Strong, irregular tangle near the ground',
+    habitat:'Dry, sunny grassland, steppe and field margins (rarely inside homes)', diet:'Insects',
+    region:'Local in dry open country, not typically in houses',
+    desc:'A rounded, satin-black widow spider whose abdomen carries up to thirteen red, orange or yellow spots. Shy and reclusive, it stays low in dense vegetation. Only the much larger female can deliver a meaningful bite.',
+    medical:{level:'significant', text:'One of only two spiders of recognised medical significance in Portugal. The female\u2019s venom can cause latrodectism — pain, sweating and muscle cramps. It is rarely life-threatening in healthy adults, but medical attention is advised if bitten. The spider is shy and bites are uncommon.'},
+    fact:'Its Latin name means "thirteen-spotted"; in some regions it is called the malmignatte.',
+    art:{body:'#141414', leg:'#0a0a0a', style:'orb', abd:'round', marking:'spots13', eyes:'norm'} },
+
+  { id:22, num:'022', en:'Gibraltar Funnel-web', pt:'Aranha-de-funil-ibérica', sci:'Macrothele calpeiana', fam:'Macrothelidae',
+    type:'funnel', habitatTag:'cork oak', rarity:'legendary', noct:true,
+    size:'Body to ~30 mm+ — the largest spider in Europe', active:'Night', web:'Funnel/sheet web among stones, roots and leaf litter',
+    habitat:'Cork-oak woodland and scrub, mainly in the south', diet:'Insects and other invertebrates',
+    region:'Local and patchy in Portugal, chiefly the Algarve',
+    desc:'A heavy, satin-black mygalomorph (a relative of tarantulas) with strikingly long spinnerets. Europe\u2019s largest spider, it lives in a funnel of silk among rocks and roots and is rarely seen.',
+    medical:{level:'minor', text:'Imposing, but its venom is not dangerous to humans (a bite is painful). It is protected — do not collect or disturb it.'},
+    fact:'It is the only spider species protected under European Union legislation.',
+    art:{body:'#15151a', leg:'#0c0c10', style:'funnel', abd:'oval', marking:'none', eyes:'norm'} },
+
+  { id:23, num:'023', en:'Portuguese Cave Midget', pt:'Aranha-cavernícola-de-Portugal', sci:'Anapistula ataecina', fam:'Symphytognathidae',
+    type:'specialist', habitatTag:'caves', rarity:'mythic', noct:true,
+    size:'~0.4–0.5 mm — among the smallest spiders known', active:'Hidden, cave-dwelling', web:'Minute web',
+    habitat:'A few caves in southern Portugal', diet:'Microscopic invertebrates',
+    region:'Endemic to Portugal and extremely localised',
+    desc:'A true micro-spider, smaller than a pinhead, known only from caves in the Algarve. It is a Portuguese endemic of high conservation concern and is almost never seen — a record-keeper\u2019s holy grail more than a field encounter.',
+    medical:{level:'harmless', text:'Completely harmless — far too small to bite a human.'},
+    fact:'It is named after Ataegina, an underworld goddess of the ancient Lusitanians.',
+    art:{body:'#caa86a', leg:'#a98c55', style:'micro', abd:'round', marking:'none', eyes:'norm'} },
+
+  { id:24, num:'024', en:'Zebra Jumping Spider', pt:'Aranha-zebra', sci:'Salticus scenicus', fam:'Salticidae',
+    type:'jumper', habitatTag:'walls', rarity:'common', noct:false,
+    size:'5–7 mm', active:'Day', web:'None',
+    habitat:'Sunny walls, rocks, fences and buildings', diet:'Small insects',
+    region:'Common on sunlit walls everywhere',
+    desc:'A small, charismatic jumper boldly marked in black and white stripes. It stalks prey in short bursts, swivelling its big front eyes to keep target in view, then jumps to seize it — tethered by a silk safety line.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'It often turns to "look at" a watching human, one of the most engaging spiders to meet.',
+    art:{body:'#2a2a2a', leg:'#1a1a1a', style:'compact', abd:'oval', marking:'stripesBW', eyes:'big'} },
+
+  { id:25, num:'025', en:'Goldenrod Crab Spider', pt:'Aranha-caranguejo-amarela', sci:'Misumena vatia', fam:'Thomisidae',
+    type:'crab', habitatTag:'flowers', rarity:'common', noct:false,
+    size:'Female 6–10 mm · male 3–5 mm', active:'Day', web:'None — ambushes from flowers',
+    habitat:'Flower heads in meadows, gardens and verges', diet:'Bees, hoverflies and other flower visitors',
+    region:'Common across mainland Portugal in flowery places',
+    desc:'A squat, crab-shaped ambusher that waits inside a flower with its long front legs spread. Over several days it can slowly shift between white and yellow to match the bloom. It regularly takes prey far larger than itself.',
+    medical:{level:'harmless', text:'Not medically significant. The fangs rarely pierce human skin.'},
+    fact:'The colour change is one-sided in speed: turning yellow takes days, while turning back to white is quicker.',
+    art:{body:'#e9d24a', leg:'#d8be3c', style:'crab', abd:'flat', marking:'none', eyes:'norm'} },
+
+  { id:26, num:'026', en:'Woodlouse Spider', pt:'Aranha-dos-bichos-de-conta', sci:'Dysdera crocata', fam:'Dysderidae',
+    type:'specialist', habitatTag:'under stones', rarity:'common', noct:true,
+    size:'Female 11–15 mm · male 9–10 mm', active:'Night', web:'None — rests in a silk sac under cover',
+    habitat:'Under stones, logs, bark and pots; sometimes indoors at floor level', diet:'Woodlice and other ground invertebrates',
+    region:'Common and widespread across Portugal',
+    desc:'A ground hunter with a glossy reddish front body, a pale cream abdomen and strikingly large, forward-pointing fangs. Those fangs are built to pierce the armour of woodlice, prey that few other predators will tackle.',
+    medical:{level:'minor', text:'Not dangerous, but the large fangs can give a brief, sharp nip if the spider is carelessly handled. Any effect is short-lived.'},
+    fact:'It is one of very few predators that specialise in eating woodlice.',
+    art:{body:'#b06a4a', leg:'#9a5740', style:'wolf', abd:'oval', marking:'none', eyes:'norm'} },
+
+  { id:27, num:'027', en:'Marbled Cellar Spider', pt:'Aranha-das-adegas-marmoreada', sci:'Holocnemus pluchei', fam:'Pholcidae',
+    type:'tangle', habitatTag:'sheltered corners', rarity:'common', noct:true,
+    size:'Body 5–7 mm · legs much longer', active:'Night', web:'Loose tangle web in sheltered nooks',
+    habitat:'Porches, sheds, walls and vegetation, often outdoors', diet:'Small insects and other spiders',
+    region:'Common in the south and centre, spreading north',
+    desc:'A long-legged cellar spider like the familiar indoor one, but with a more marbled, oval body and a habit of using sheltered spots outdoors as well as inside. Several individuals may share one loose communal web.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'Like other cellar spiders, it whirls its body into a blur when the web is disturbed.',
+    art:{body:'#c2b39a', leg:'#ab9c84', style:'long', abd:'oval', marking:'bands', eyes:'norm'} },
+
+  { id:28, num:'028', en:'Missing-sector Orbweaver', pt:'Aranha-de-sector-aberto', sci:'Zygiella x-notata', fam:'Araneidae',
+    type:'orb', habitatTag:'windows', rarity:'common', noct:false,
+    size:'Female 5–7 mm · male 4–5 mm', active:'Day & night', web:'Orb web with one open sector and a signal line',
+    habitat:'Window frames, doorways, fences and walls near buildings', diet:'Small flying insects',
+    region:'Common around buildings throughout Portugal',
+    desc:'A small orb-weaver known for the gap in its web: it leaves one sector unspun, with a single signal thread running up to a silk retreat in a corner. It waits there with one leg on the line, feeling for prey.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'The open sector is no mistake — the signal line through it gives the spider the fastest route to struggling prey.',
+    art:{body:'#8c7c64', leg:'#73654f', style:'orb', abd:'round', marking:'cream', eyes:'norm'} },
+
+  { id:29, num:'029', en:'Cucumber Green Spider', pt:'Aranha-verde-pepino', sci:'Araniella cucurbitina', fam:'Araneidae',
+    type:'orb', habitatTag:'foliage', rarity:'common', noct:false,
+    size:'Female 4–6 mm · male 3–4 mm', active:'Day', web:'Small orb web among leaves',
+    habitat:'Shrubs, hedgerows and woodland edges', diet:'Small insects',
+    region:'Common in green places across Portugal',
+    desc:'A tiny, bright apple-green orb-weaver with a rounded abdomen, usually found at a small web on the underside of a leaf. The vivid green is only seen in life, as it fades after death.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'Despite the vivid green back, there is a small red mark underneath, near the tip of the abdomen.',
+    art:{body:'#7bbf4e', leg:'#69a843', style:'orb', abd:'round', marking:'none', eyes:'norm'} },
+
+  { id:30, num:'030', en:'Cricket-bat Orbweaver', pt:'Aranha-de-orbe-dos-prados', sci:'Mangora acalypha', fam:'Araneidae',
+    type:'orb', habitatTag:'grassland', rarity:'common', noct:false,
+    size:'Female 5–6 mm · male 3–4 mm', active:'Day', web:'Delicate, finely meshed orb web low in vegetation',
+    habitat:'Grassland, heath and sunny field margins', diet:'Small flying insects',
+    region:'Common in open grassy habitats',
+    desc:'A small, pale orb-weaver of grassland whose abdomen carries a dark central mark that some read as the shape of a cricket bat. Its web is unusually fine and densely meshed for the spider size.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'Its web has more spokes and a finer mesh than most orb-weavers of similar size.',
+    art:{body:'#cbb98f', leg:'#b3a279', style:'orb', abd:'round', marking:'maleStripe', eyes:'norm'} },
+
+  { id:31, num:'031', en:'Long-jawed Orbweaver', pt:'Aranha-de-mandíbulas-longas', sci:'Tetragnatha extensa', fam:'Tetragnathidae',
+    type:'orb', habitatTag:'waterside', rarity:'uncommon', noct:false,
+    size:'Female 9–11 mm · male 6–9 mm', active:'Day & night', web:'Open, near-horizontal orb web by water',
+    habitat:'Reeds and tall grass beside ponds, ditches and rivers', diet:'Small flying insects, including midges',
+    region:'Common beside fresh water across Portugal',
+    desc:'A slender, straw-coloured orb-weaver with a very long body and long jaws. When resting on a stem it stretches its legs fore and aft and lies flat along it, becoming very hard to spot.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'During mating the long jaws of the two spiders interlock, holding each other safely apart.',
+    art:{body:'#bcae7e', leg:'#a59866', style:'long', abd:'elong', marking:'none', eyes:'norm'} },
+
+  { id:32, num:'032', en:'Furrow Orbweaver', pt:'Aranha-de-orbe-ribeirinha', sci:'Larinioides cornutus', fam:'Araneidae',
+    type:'orb', habitatTag:'waterside', rarity:'uncommon', noct:true,
+    size:'Female 6–14 mm · male 5–9 mm', active:'Night', web:'Vertical orb web near water and on structures',
+    habitat:'Damp vegetation, reeds, bridges and fences near water', diet:'Flying insects',
+    region:'Common near water and on structures throughout Portugal',
+    desc:'A sturdy, usually nocturnal orb-weaver with a pale-edged dark mark down the abdomen, often likened to an oak leaf or a furrow. By day it hides in a rolled leaf or crevice beside the web.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'It is one of the orb-weavers most often found on bridges and waterside railings.',
+    art:{body:'#8a7656', leg:'#736043', style:'orb', abd:'oval', marking:'cream', eyes:'norm'} },
+
+  { id:33, num:'033', en:'Striped Lynx Spider', pt:'Aranha-lince', sci:'Oxyopes lineatus', fam:'Oxyopidae',
+    type:'specialist', habitatTag:'low plants', rarity:'uncommon', noct:false,
+    size:'Female 6–8 mm · male 5–6 mm', active:'Day', web:'None — an active, sighted hunter on plants',
+    habitat:'Sunny low vegetation, scrub and grassland', diet:'Insects caught by stalking and pouncing',
+    region:'Frequent in warm, sunny habitats, especially in the south',
+    desc:'A pale, alert hunter with spiny legs and six of its eyes set in a hexagon for sharp forward vision. It stalks and pounces on prey among plants rather than building a web, often in short, lynx-like leaps.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'Lynx spiders rely on keen eyesight and quick pounces, hunting more like jumping spiders than typical web-builders.',
+    art:{body:'#d8c79a', leg:'#c0b082', style:'wolf', abd:'oval', marking:'maleStripe', eyes:'norm'} },
+
+  { id:34, num:'034', en:'Tropical Tent-web Spider', pt:'Aranha-de-tenda', sci:'Cyrtophora citricola', fam:'Araneidae',
+    type:'orb', habitatTag:'bushes', rarity:'uncommon', noct:false,
+    size:'Female 10–15 mm · male 3–5 mm', active:'Day', web:'Dense, domed horizontal sheet, often in colonies',
+    habitat:'Bushes, cactus, fences and groves in warm areas', diet:'Flying insects',
+    region:'Established in the south, notably the Algarve, and spreading',
+    desc:'An orb-weaver that builds not a flat orb but a finely meshed, horizontal dome of silk, often in loose colonies where many webs join. It sits beneath the dome and is a striking sight on warm-country fences and shrubs.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'Many individuals can web together into large connected colonies, unusual among orb-weavers.',
+    art:{body:'#7a6f57', leg:'#615841', style:'orb', abd:'round', marking:'spots13', eyes:'norm'} },
+
+  { id:35, num:'035', en:'Yellow Sac Spider', pt:'Aranha-de-saco-amarela', sci:'Cheiracanthium punctorium', fam:'Eutichuridae',
+    type:'specialist', habitatTag:'tall grass', rarity:'uncommon', noct:true,
+    size:'Female 10–15 mm · male 10–12 mm', active:'Night', web:'None — builds a silk sac retreat',
+    habitat:'Tall grassland and scrub; the larger species may enter buildings', diet:'Insects caught by active hunting',
+    region:'Present in warm grassy habitats; far less often met than the harmless spiders above',
+    desc:'A pale straw to greenish hunter with dark jaw tips that builds a silk sac to shelter in by day and hunts by night. This is the European spider most often singled out for a noticeably sharp bite, though serious effects are rare.',
+    medical:{level:'minor', text:'Among the few European spiders that can deliver a bite felt like a bee or wasp sting, with local pain and swelling that usually settles within a day or two. Not considered dangerous, and severe reactions are uncommon. Seek medical advice if you feel unwell.'},
+    fact:'It is one of the few spiders in Europe whose bite is regularly noticed by people — yet the effect is usually no worse than a wasp sting.',
+    art:{body:'#ddca8a', leg:'#cdb978', style:'huntsman', abd:'oval', marking:'none', eyes:'norm'} },
+
+  { id:36, num:'036', en:'Feather-legged Spider', pt:'Aranha-de-pernas-emplumadas', sci:'Uloborus plumipes', fam:'Uloboridae',
+    type:'orb', habitatTag:'sheltered foliage', rarity:'uncommon', noct:false,
+    size:'Female 4–6 mm · male slightly smaller', active:'Day & night', web:'Horizontal orb web of woolly (cribellate) silk',
+    habitat:'Sheltered foliage, garden centres and greenhouses', diet:'Small insects',
+    region:'Established around the country, often in greenhouses and indoors',
+    desc:'A small, twig-like orb-weaver that holds its body flat with tufts of hair on its front legs. Remarkably, it belongs to the one orb-weaver family that has lost its venom glands entirely, and so wraps prey in vast amounts of silk rather than biting it.',
+    medical:{level:'harmless', text:'Not medically significant — this spider has no venom glands at all.'},
+    fact:'It is one of the very few spiders on Earth with no venom glands, subduing prey by silk-wrapping alone.',
+    art:{body:'#a99a7c', leg:'#8f8166', style:'crab', abd:'round', marking:'humps', eyes:'norm'} },
+
+  { id:37, num:'037', en:'Cave Orbweaver', pt:'Aranha-das-grutas', sci:'Meta menardi', fam:'Tetragnathidae',
+    type:'orb', habitatTag:'caves', rarity:'rare', noct:true,
+    size:'Female 13–15 mm · male 9–13 mm', active:'In constant dark', web:'Orb web in dark, damp spaces',
+    habitat:'Cave mouths, mines, cellars, wells and culverts', diet:'Cave insects, woodlice, millipedes and stray moths',
+    region:'Local across Portugal wherever cool, dark, damp spaces occur',
+    desc:'A long-legged orb-weaver of the twilight zone of caves and cellars that shuns daylight. Adults hang in the dark, and the spherical egg sacs dangle from the ceiling on long threads. It is among the most reliably cave-dwelling spiders of Europe.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'Its hatchlings are drawn toward light, which helps them leave the cave to disperse before later seeking the dark again.',
+    art:{body:'#6e5f49', leg:'#564a39', style:'long', abd:'oval', marking:'cream', eyes:'norm'} },
+
+  { id:38, num:'038', en:'Mediterranean Tarantula', pt:'Tarântula-do-mediterrâneo', sci:'Lycosa tarantula', fam:'Lycosidae',
+    type:'wolf', habitatTag:'dry ground', rarity:'rare', noct:true,
+    size:'Female to about 30 mm · leg span near 70 mm', active:'Night', web:'None — lives in a silk-lined burrow',
+    habitat:'Dry, open ground, scrub and field margins in warm areas', diet:'Large insects ambushed from the burrow mouth',
+    region:'Local in warm, dry parts of Portugal; much larger than the common wolf spider',
+    desc:'A large ground wolf spider that lives in a vertical burrow and rushes out to seize passing prey. Despite its size and old reputation, it is reluctant to bite, and its venom is geared to subduing insects rather than harming people.',
+    medical:{level:'minor', text:'A defensive bite is possible if the spider is cornered or handled, and can be painful — roughly comparable to a bee sting — but it is not considered dangerous. Seek medical advice if you feel unwell.'},
+    fact:'This spider gave its name to both the word tarantula and the tarantella, a dance once believed to cure its bite.',
+    art:{body:'#7c6248', leg:'#5f4a36', style:'wolf', abd:'oval', marking:'maleStripe', eyes:'norm'} },
+
+  { id:39, num:'039', en:'Lined Velvet Spider', pt:'Aranha-de-veludo', sci:'Stegodyphus lineatus', fam:'Eresidae',
+    type:'specialist', habitatTag:'dry scrub', rarity:'rare', noct:false,
+    size:'Female to about 15 mm · male to about 12 mm', active:'Day & night', web:'Tangle of catching threads spread from a silk tube',
+    habitat:'Dry, sunny scrub and open ground in the Mediterranean zone', diet:'Insects trapped in the web',
+    region:'A Mediterranean species of warm, dry country; the only European Stegodyphus',
+    desc:'A velvety, pale-and-dark spider of hot, dry scrub that spins a silk retreat with a spread of catching threads. It is best known for an extraordinary act of motherhood at the end of its life.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'After feeding her young on regurgitated food, the mother lets them consume her body — a final meal that gives them a strong start. This is called matriphagy.',
+    art:{body:'#cdb48f', leg:'#b09472', style:'compact', abd:'oval', marking:'bands', eyes:'norm'} },
+
+  { id:40, num:'040', en:'Ladybird Spider', pt:'Aranha-joaninha', sci:'Eresus kollari', fam:'Eresidae',
+    type:'specialist', habitatTag:'sunny slopes', rarity:'rare', noct:false,
+    size:'Female 15–20 mm · male around 10 mm', active:'Day', web:'Silk-lined burrow with a sheet of catching silk at ground level',
+    habitat:'Warm, sunny slopes with sparse vegetation and bare ground', diet:'Ground beetles and other insects',
+    region:'Local in warm, dry habitats of the Iberian Peninsula',
+    desc:'A velvet spider whose adult male is one of the most spectacular in Europe: bright red with bold black spots, like a walking ladybird. Females are velvety black and spend their lives in a burrow, rarely seen above ground.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'Only the small male wears the famous red-and-black colours, and only as an adult, when he leaves the burrow to wander in search of a female.',
+    art:{body:'#cf3b30', leg:'#1d1d1d', style:'compact', abd:'round', marking:'fourspots', eyes:'norm'} },
+
+  { id:41, num:'041', en:'Iberian Ant-eating Spider', pt:'Aranha-formigueira-ibérica', sci:'Zodarion alentejanum', fam:'Zodariidae',
+    type:'specialist', habitatTag:'bare ground', rarity:'rare', noct:false,
+    size:'Body around 3–5 mm', active:'Day', web:'None — shelters in a small dome of silk and sand',
+    habitat:'Bare, stony ground in warm, open country', diet:'Ants',
+    region:'An endemic of mainland Portugal, named for the Alentejo',
+    desc:'A tiny, ant-like spider that lives among ants and hunts them, walking with a jerky, ant-mimicking gait. It shelters under a small igloo of silk studded with sand grains. This species is found only in Portugal.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'Ant-eating spiders both resemble and prey upon ants, moving unnoticed among the colonies that feed them.',
+    art:{body:'#5b4a3a', leg:'#473a2d', style:'compact', abd:'oval', marking:'none', eyes:'norm'} },
+
+  { id:42, num:'042', en:'Iberian Steppe Widow', pt:'Viúva-das-estepes', sci:'Latrodectus lilianae', fam:'Theridiidae',
+    type:'tangle', habitatTag:'open steppe', rarity:'rare', noct:true,
+    size:'Female body around 8–13 mm', active:'Night', web:'Strong tangle web low among stones and plants',
+    habitat:'Open, dry steppe and scrub, away from buildings', diet:'Ground-active insects',
+    region:'A widow of the dry Iberian interior, in Portugal and Spain',
+    desc:'A close relative of the Mediterranean black widow that lives out on open Iberian steppe and scrub rather than near people. It carries small pale and orange marks near the front of the abdomen and, like its relatives, builds a strong, untidy tangle web close to the ground.',
+    medical:{level:'minor', text:'A true widow, but one of remote open country rather than homes, so encounters are unlikely. As a precaution its bite is best treated like that of other widows; the effects of its venom are not well documented. Seek medical advice if bitten and feeling unwell.'},
+    fact:'Unlike its American cousins that often live close to people, this widow keeps to remote open steppe.',
+    art:{body:'#1f1f22', leg:'#141416', style:'compact', abd:'round', marking:'cream', eyes:'norm'} },
+
+  { id:43, num:'043', en:'Disc-web Spider', pt:'Aranha-de-disco', sci:'Oecobius navus', fam:'Oecobiidae',
+    type:'specialist', habitatTag:'walls', rarity:'uncommon', noct:false,
+    size:'Body around 2–3 mm', active:'Day & night', web:'Small flat star-shaped silk patch flush to a surface',
+    habitat:'Walls, around windows and skirting, indoors and out', diet:'Tiny insects, especially ants',
+    region:'Common but easily overlooked on walls throughout Portugal',
+    desc:'A minute, flattened spider that lives under a small star-shaped patch of silk pressed against a wall. When an ant or other small insect passes, it darts out in a quick circle, laying silk around the prey before it can escape.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'For its size it is astonishingly fast, circling prey in a fraction of a second to lay down restraining silk.',
+    art:{body:'#9a8f78', leg:'#807660', style:'crab', abd:'flat', marking:'none', eyes:'norm'} },
+
+  { id:44, num:'044', en:'Black Lace-weaver', pt:'Aranha-de-renda-preta', sci:'Amaurobius ferox', fam:'Amaurobiidae',
+    type:'tube', habitatTag:'walls', rarity:'uncommon', noct:true,
+    size:'Female 11–16 mm · male 8–10 mm', active:'Night', web:'Bluish woolly (cribellate) lace silk around a crevice',
+    habitat:'Cracks in walls, under stones, logs and bark, often near buildings', diet:'Insects and other invertebrates',
+    region:'Widespread in shaded, damp places across Portugal',
+    desc:'A dark, robust spider that lines a crevice with bluish, woolly lace-like silk and waits at the entrance. The combed silk has a faintly electric look when fresh. Its family is known for a remarkable feeding arrangement between mother and young.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'The mother lays a batch of special unfertilised eggs purely as food for her spiderlings, before they finally consume her as well.',
+    art:{body:'#3a342c', leg:'#2a251f', style:'tube', abd:'oval', marking:'cream', eyes:'norm'} },
+
+  { id:45, num:'045', en:'Mediterranean Crevice Weaver', pt:'Aranha-das-fendas', sci:'Filistata insidiatrix', fam:'Filistatidae',
+    type:'tube', habitatTag:'walls', rarity:'uncommon', noct:true,
+    size:'Female 9–14 mm · male smaller with longer legs', active:'Night', web:'Woolly (cribellate) silk lines spreading from a crevice',
+    habitat:'Cracks in old walls, rocks and bark in warm, dry places', diet:'Insects',
+    region:'Common in old walls and stonework in the south and centre',
+    desc:'A long-lived spider of warm walls and rockwork that lives deep in a crevice, with a fan of woolly silk lines radiating out across the surface. Its eyes are clustered together on a small central mound, and females may live for several years.',
+    medical:{level:'harmless', text:'Not medically significant.'},
+    fact:'Females are long-lived and tend the same crevice and web for years, enlarging it over time.',
+    art:{body:'#7a6a52', leg:'#62553f', style:'tube', abd:'oval', marking:'none', eyes:'norm'} },
+];
+
+/* ------------------------------------------------------------
+   Enrichment fields for every species: a size in mm for visual
+   scaling, a typical lifespan, the months adults are most often
+   seen, the name etymology, a recognition tip, and endemism
+   where it applies. Held in a parallel table so the core list
+   above stays untouched. Figures are approximate and for learning.
+   ------------------------------------------------------------ */
+const EXTRA = {
+  1:{mm:20, lifespan:'About 1 year', months:[7,8,9,10,11], etym:'diadematus means "crowned", for the cross of pale spots.', idTip:'White cross of dots on the abdomen; hangs head-down at the web centre.'},
+  2:{mm:10, lifespan:'Up to about 2 years', months:[1,2,3,4,5,6,7,8,9,10,11,12], etym:'phalangioides means "harvestman-like", from the very long legs.', idTip:'Tiny body on hair-thin legs in a ceiling corner; whirls in its web when disturbed.'},
+  3:{mm:15, lifespan:'About 1 year', months:[4,5,6,7], etym:'mirabilis means "wonderful" or "remarkable".', idTip:'Often basks with the front two pairs of legs held together like one.'},
+  4:{mm:18, lifespan:'1 to 2 years', months:[1,2,3,4,5,6,7,8,9,10,11,12], etym:'Eratigena is an anagram of Tegenaria, the genus it was split from.', idTip:'Big, fast and hairy; flat sheet web with a funnel retreat in a corner or shed.'},
+  5:{mm:8, lifespan:'About 1 year', months:[4,5,6,7,8], etym:'globosum means "globe-shaped", for the rounded abdomen.', idTip:'Rounded, shiny abdomen with dark marks, sitting out on a flower head.'},
+  6:{mm:12, lifespan:'About 1 year', months:[4,5,6,7], etym:'gibbosa means "humped", for the paired humps on the abdomen.', idTip:'Two low humps near the front of a greenish-brown abdomen; a spring orb-weaver.'},
+  7:{mm:18, lifespan:'About 1 year', months:[7,8,9,10], etym:'named after the naturalist M. T. Bruennich; Argiope is a figure of Greek myth.', idTip:'Yellow-and-black banding; the web carries a zig-zag silk ribbon.'},
+  8:{mm:16, lifespan:'About 1 year', months:[6,7,8,9], etym:'labyrinthica refers to the maze-like tube behind the sheet web.', idTip:'Flat sheet web with a funnel; pale-edged dark band on the abdomen.'},
+  9:{mm:8, lifespan:'About 1 year', months:[3,4,5,6,7,8,9,10], etym:'semilimbatus means "half-bordered", for the pale edging.', idTip:'Flattened grey jumper on sunny walls, with a pale border around the body.'},
+  10:{mm:11, lifespan:'About 1 year', months:[4,5,6,7,8], etym:'onustus means "laden", perhaps for the heavy-looking abdomen.', idTip:'Angular pink, white or yellow abdomen with side horns; sits deep in flowers.'},
+  11:{mm:25, lifespan:'About 1 year', months:[7,8,9,10], etym:'lobata means "lobed", for the scalloped edge of the abdomen.', idTip:'Big silvery abdomen with a scalloped, lobed edge; bold orb web.'},
+  12:{mm:15, lifespan:'About 1 year', months:[4,5,6,7], etym:'virescens means "becoming green".', idTip:'Adult females bright green; males green with a red-striped abdomen.'},
+  13:{mm:15, lifespan:'1 to 2 years', months:[5,6,7,8,9,10], etym:'umbratica means "of the shade", for its daytime hiding.', idTip:'Very flat, dark and leathery; squeezes into bark and wall cracks by day.'},
+  14:{mm:6, lifespan:'About 1 year', months:[1,2,3,4,5,6,7,8,9,10,11,12], etym:'Scytodes means "leather-like"; thoracica for the domed front body.', idTip:'Domed front body; moves slowly and spits gum to trap prey.'},
+  15:{mm:12, lifespan:'About 1 year', months:[4,5,6,7,8], etym:'chrysops means "golden-eye".', idTip:'Male has a brick-red abdomen with a black centre; large-eyed ground jumper.'},
+  16:{mm:20, lifespan:'1 to 2 years', months:[9,10,11,12], etym:'spinimana means "spiny-handed", for spines on the legs.', idTip:'Mottled grey-brown and hairy, wolf-spider-like, but enters houses; harmless.'},
+  17:{mm:22, lifespan:'1 to 2 years', months:[5,6,7,8,9,10], etym:'radiata means "rayed", for the pattern radiating on the head.', idTip:'Classic wolf spider; carries an egg sac on the spinnerets, then young on her back.'},
+  18:{mm:14, lifespan:'1 to 2 years', months:[1,2,3,4,5,6,7,8,9,10,11,12], etym:'nobilis means "noble".', idTip:'Glossy bulbous abdomen, brownish with a pale front band; messy tangle web.'},
+  19:{mm:22, lifespan:'2 to 3 years', months:[6,7,8,9,10], etym:'florentina means "of Florence", where it was first described.', idTip:'Iridescent green fangs; lives in a silk tube with trip-lines radiating out.'},
+  20:{mm:9, lifespan:'1 to 2 years', months:[1,2,3,4,5,6,7,8,9,10,11,12], etym:'Loxosceles means "slanted legs"; rufescens means "reddish".', idTip:'Small, sandy-brown, six eyes in three pairs, and a faint violin mark behind them.'},
+  21:{mm:15, lifespan:'1 to 3 years (female)', months:[6,7,8,9,10], etym:'tredecimguttatus means "thirteen-spotted".', idTip:'Glossy black globe abdomen, usually with red spots; hangs in a tangle web.'},
+  22:{mm:30, lifespan:'Several years (female)', months:[8,9,10,11], etym:'calpeiana comes from Calpe, the ancient name for Gibraltar.', idTip:'Very large and glossy black with long spinnerets; the biggest spider in Europe. Found only in the far south.'},
+  23:{mm:0.6, lifespan:'Poorly documented', months:[1,2,3,4,5,6,7,8,9,10,11,12], etym:'named for Ataegina, an underworld goddess of the ancient Lusitanians.', idTip:'Under half a millimetre, effectively invisible without a microscope. Known from southern caves.', endemic:'Portugal'},
+  24:{mm:9, lifespan:'About 1 year', months:[4,5,6,7,8,9], etym:'Salticus means "dancer"; scenicus means "theatrical", for the courtship dance.', idTip:'Small black-and-white striped jumper that often turns to face you.'},
+  25:{mm:10, lifespan:'About 1 year', months:[5,6,7,8], etym:'vatia means "bow-legged".', idTip:'White, yellow or pale-green crab spider that can slowly change colour to match its flower.'},
+  26:{mm:15, lifespan:'1 to 2 years', months:[1,2,3,4,5,6,7,8,9,10,11,12], etym:'crocata means "saffron-coloured", for the orange front body.', idTip:'Glossy reddish front body, pale abdomen and big forward-pointing fangs; six eyes.'},
+  27:{mm:7, lifespan:'About 1 year', months:[1,2,3,4,5,6,7,8,9,10,11,12], etym:'named after the naturalist Pluche.', idTip:'Like the common cellar spider but with a marbled, oval body; often in sheltered spots outdoors.'},
+  28:{mm:7, lifespan:'About 1 year', months:[6,7,8,9,10,11], etym:'x-notata means "marked with an X", for the abdominal pattern.', idTip:'Orb web on a window frame with one empty sector leading to a corner retreat.'},
+  29:{mm:6, lifespan:'About 1 year', months:[5,6,7,8], etym:'cucurbitina means "gourd-like", for the rounded green abdomen.', idTip:'Small bright apple-green abdomen; a little orb web in low foliage.'},
+  30:{mm:6, lifespan:'About 1 year', months:[5,6,7,8], etym:'acalypha is borrowed from a plant genus; the English name nods to the bat-shaped mark.', idTip:'Tiny grassland orb-weaver; pale abdomen with a dark central mark like a cricket bat.'},
+  31:{mm:11, lifespan:'About 1 year', months:[5,6,7,8,9], etym:'Tetragnatha means "four-jawed"; extensa means "stretched-out", its resting pose.', idTip:'Very elongated body and long jaws; stretches along a grass stem by water.'},
+  32:{mm:12, lifespan:'About 1 year', months:[5,6,7,8,9,10], etym:'cornutus means "horned".', idTip:'Sturdy orb-weaver near water and bridges; abdomen with a pale-edged oak-leaf mark.'},
+  33:{mm:7, lifespan:'About 1 year', months:[5,6,7,8], etym:'Oxyopes means "sharp-eyed", for the keen-sighted lynx spiders.', idTip:'Pale, spiny-legged hunter on low plants; six eyes set in a hexagon.'},
+  34:{mm:15, lifespan:'About 1 year', months:[5,6,7,8,9,10], etym:'Cyrtophora means "hump-bearer"; citricola means "citrus-dwelling".', idTip:'Builds a horizontal domed sheet, often in loose colonies on bushes and fences in the south.'},
+  35:{mm:15, lifespan:'About 1 year', months:[6,7,8,9], etym:'Cheiracanthium means "thorn-hand"; punctorium means "for pricking", from the bite.', idTip:'Pale straw-yellow with dark jaw tips; makes a silk sac retreat.'},
+  36:{mm:6, lifespan:'About 1 year', months:[1,2,3,4,5,6,7,8,9,10,11,12], etym:'plumipes means "feather-footed", for tufts on the legs.', idTip:'Holds its body flat with tufted front legs; one of the few spiders with no venom glands.'},
+  37:{mm:15, lifespan:'2 to 3 years', months:[1,2,3,4,5,6,7,8,9,10,11,12], etym:'named after the naturalist Menard; Meta is a Roman boundary marker.', idTip:'Long-legged orb-weaver of cave mouths, cellars and culverts; shuns light.'},
+  38:{mm:30, lifespan:'2 to 3 years (female)', months:[6,7,8,9,10], etym:'named for the town of Taranto in Italy, the source of both "tarantula" and "tarantella".', idTip:'Large ground wolf spider that lives in a burrow; much bigger than the common Hogna.'},
+  39:{mm:15, lifespan:'About 1 year', months:[4,5,6,7], etym:'lineatus means "lined", for the dark back stripes.', idTip:'Velvety pale-and-dark body; builds a tube with a tangle of catching threads in dry scrub.'},
+  40:{mm:18, lifespan:'Up to about 4 years (female)', months:[9,10,11], etym:'named after the naturalist Kollar; the red-and-black male gives the ladybird name.', idTip:'Adult male vivid red with black spots; females velvety black and stay underground.'},
+  41:{mm:5, lifespan:'About 1 year', months:[4,5,6,7,8,9], etym:'named for the Alentejo region of southern Portugal.', idTip:'Tiny and ant-like, often walking among ants on bare ground in the south.', endemic:'Portugal'},
+  42:{mm:13, lifespan:'1 to 2 years (female)', months:[6,7,8,9,10], etym:'named in honour of Liliana by the describing arachnologist.', idTip:'A widow of open Iberian steppe rather than houses; pale-and-orange marks near the front.', endemic:'Iberian Peninsula'},
+  43:{mm:3, lifespan:'About 1 year', months:[1,2,3,4,5,6,7,8,9,10,11,12], etym:'Oecobius means "house-dweller"; navus means "busy".', idTip:'Minute and flat under a small star-shaped silk patch on a wall; runs in quick bursts.'},
+  44:{mm:15, lifespan:'1 to 2 years', months:[1,2,3,4,5,6,7,8,9,10,11,12], etym:'ferox means "fierce".', idTip:'Dark lace-web spider of walls and bark with bluish combed silk.'},
+  45:{mm:14, lifespan:'Several years (female)', months:[1,2,3,4,5,6,7,8,9,10,11,12], etym:'insidiatrix means "one who lies in ambush".', idTip:'Lives in a crevice behind a ragged fan of bluish silk; eyes clustered on a central mound.'},
+};
+_LEGACY_SPECIES.forEach(s=>{ const x=EXTRA[s.id]; if(x){ for(const k in x) s[k]=x[k]; } });
+
+/* ---------- iNaturalist (Portugal) data, pulled via GBIF research-grade observations ---------- */
+const INAT = {"1":{"n":578,"t":52628,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/605345778/original.jpg","l":"CC BY-NC","by":"Charcos Companhia","g":0,"mo":[7,8,8,2,8,37,54,90,95,151,92,26]},"2":{"n":335,"t":67328,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/604566892/original.jpg","l":"CC BY","by":"João Lima","g":0,"mo":[20,22,15,22,43,27,39,41,39,29,24,14]},"3":{"n":869,"t":55787,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/605700509/original.jpg","l":"CC BY-NC","by":"pucazz","g":0,"mo":[30,90,177,223,136,25,12,9,23,62,55,27]},"4":{"n":77,"t":0,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/606653892/original.jpg","l":"CC BY-NC","by":"vitordfsilva","g":1,"mo":[9,5,10,6,3,3,5,4,12,7,7,6]},"5":{"n":1890,"t":245656,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/604816338/original.jpg","l":"CC BY-NC","by":"Axel Gosseries","g":0,"mo":[17,78,245,624,546,177,61,43,53,23,13,10]},"6":{"n":9,"t":61763,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/368227703/original.jpeg","l":"CC BY-NC","by":"hazerider","g":0,"mo":[0,0,2,2,1,0,0,0,0,0,3,1]},"7":{"n":626,"t":50867,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/608648807/original.jpg","l":"CC BY-NC","by":"mariamaduro","g":0,"mo":[4,1,4,2,3,15,79,238,138,108,30,4]},"8":{"n":57,"t":130304,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/544925516/original.jpg","l":"CC BY-NC","by":"José Grosso-Silva","g":0,"mo":[0,0,0,3,3,16,14,19,2,0,0,0]},"9":{"n":775,"t":157990,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/605361139/original.jpg","l":"CC BY-NC","by":"wormsy","g":0,"mo":[3,28,70,119,104,70,93,153,67,48,12,8]},"10":{"n":1003,"t":59281,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/618521528/original.jpg","l":"CC BY-NC","by":"Thijs Valkenburg","g":0,"mo":[4,35,111,223,200,135,102,81,49,41,19,3]},"11":{"n":282,"t":56525,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/667871436/original.jpg","l":"CC BY","by":"Paulo Galvão","g":0,"mo":[0,0,0,1,8,27,59,120,45,19,3,0]},"12":{"n":12,"t":121766,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/481752643/original.jpg","l":"CC BY-NC","by":"marianapscp","g":0,"mo":[0,1,3,3,3,0,0,1,0,0,0,1]},"13":{"n":207,"t":130092,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/612158278/original.jpg","l":"CC BY-NC","by":"Luis Santos","g":0,"mo":[13,16,18,19,15,12,19,27,16,15,24,13]},"14":{"n":24,"t":57450,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/645716124/original.jpg","l":"CC BY-NC","by":"Carlos Pinheiro","g":0,"mo":[0,1,1,3,1,1,3,5,3,4,1,1]},"15":{"n":67,"t":146721,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/617733551/original.jpg","l":"CC BY-NC","by":"beatriz carreira","g":0,"mo":[3,3,6,13,30,7,1,2,1,1,0,0]},"16":{"n":752,"t":127112,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/605345082/original.jpg","l":"CC BY-NC","by":"rutegcl","g":0,"mo":[119,102,79,39,30,15,15,19,37,62,125,110]},"17":{"n":503,"t":326871,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/638052086/original.jpg","l":"CC BY-NC","by":"ruxlourenco","g":0,"mo":[0,7,11,12,27,80,129,92,31,80,29,5]},"18":{"n":1157,"t":366894,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/605415163/original.jpg","l":"CC BY-NC","by":"Rui Daniel Ferreira","g":0,"mo":[65,56,77,86,71,81,120,136,104,137,130,94]},"19":{"n":100,"t":320827,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/622880569/original.jpg","l":"CC BY-NC","by":"Julius Zobel","g":0,"mo":[2,3,10,9,11,9,6,12,6,16,9,7]},"20":{"n":181,"t":151792,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/605371453/original.jpg","l":"CC BY-NC","by":"António Matos","g":0,"mo":[23,16,12,17,6,11,18,7,24,28,7,12]},"21":{"n":20,"t":151791,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/651379930/original.jpg","l":"CC BY-NC","by":"Mateus Godinho","g":0,"mo":[0,0,0,4,2,2,5,2,0,5,0,0]},"22":{"n":4,"t":481151,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/670843912/original.jpg","l":"CC BY-NC","by":"vasco2024","g":0,"mo":[0,1,0,0,0,1,1,0,0,0,0,1]},"23":{"n":0,"t":0,"p":"","l":"","by":"","g":0,"mo":[0,0,0,0,0,0,0,0,0,0,0,0]},"24":{"n":47,"t":68901,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/609753535/original.jpg","l":"CC BY-NC","by":"Helio Batista","g":0,"mo":[3,3,4,8,15,9,2,0,0,2,1,0]},"25":{"n":261,"t":55746,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/621182213/original.jpg","l":"CC BY-NC","by":"André Marques","g":0,"mo":[3,8,29,53,65,36,27,20,9,8,1,2]},"26":{"n":61,"t":68912,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/606227480/original.jpg","l":"CC BY-NC","by":"Samuel Patinha","g":0,"mo":[4,6,5,4,6,4,4,3,3,7,5,10]},"27":{"n":170,"t":211210,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/622609918/original.jpg","l":"CC BY-NC","by":"Antonio Xeira","g":0,"mo":[6,5,9,22,14,10,19,37,16,12,12,8]},"28":{"n":107,"t":155279,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/609733009/original.jpg","l":"CC BY-NC","by":"simply_antastic","g":0,"mo":[6,11,10,4,7,4,10,5,12,10,19,9]},"29":{"n":22,"t":129017,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/664630108/original.jpg","l":"CC BY-NC","by":"Alexandre H. Leitão","g":0,"mo":[0,1,1,5,10,4,1,0,0,0,0,0]},"30":{"n":611,"t":319548,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/607292931/original.jpg","l":"CC BY-NC","by":"pjbit","g":0,"mo":[14,34,76,181,105,43,51,42,26,17,18,4]},"31":{"n":8,"t":153757,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/634896480/original.jpg","l":"CC BY-NC","by":"Tânia Araújo","g":0,"mo":[0,0,1,4,2,0,0,0,0,0,1,0]},"32":{"n":1,"t":126513,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/282575409/original.jpg","l":"CC BY-NC","by":"malecadu","g":0,"mo":[0,0,0,0,1,0,0,0,0,0,0,0]},"33":{"n":29,"t":311359,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/666441442/original.jpg","l":"CC BY-NC","by":"kiriuozoru","g":0,"mo":[0,1,1,3,8,7,7,2,0,0,0,0]},"34":{"n":596,"t":130082,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/608857902/original.jpg","l":"CC BY-NC","by":"pjbit","g":0,"mo":[30,32,30,36,38,57,81,95,75,53,32,37]},"35":{"n":3,"t":61866,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/543207700/original.jpg","l":"CC BY-NC","by":"dfsousa","g":0,"mo":[0,0,0,0,0,0,1,2,0,0,0,0]},"36":{"n":48,"t":372517,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/649337464/original.jpg","l":"CC BY-NC","by":"António Matos","g":0,"mo":[0,2,2,3,8,4,9,9,9,0,1,1]},"37":{"n":2,"t":224958,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/228728557/original.jpeg","l":"CC BY-NC","by":"Fernando Romão","g":0,"mo":[0,0,0,0,0,0,2,0,0,0,0,0]},"38":{"n":0,"t":0,"p":"","l":"","by":"","g":0,"mo":[0,0,0,0,0,0,0,0,0,0,0,0]},"39":{"n":0,"t":0,"p":"","l":"","by":"","g":0,"mo":[0,0,0,0,0,0,0,0,0,0,0,0]},"40":{"n":7,"t":202770,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/274491098/original.jpeg","l":"CC BY-NC","by":"Nuno Campos","g":0,"mo":[0,0,0,0,2,0,0,2,1,2,0,0]},"41":{"n":0,"t":0,"p":"","l":"","by":"","g":0,"mo":[0,0,0,0,0,0,0,0,0,0,0,0]},"42":{"n":0,"t":0,"p":"","l":"","by":"","g":0,"mo":[0,0,0,0,0,0,0,0,0,0,0,0]},"43":{"n":95,"t":226250,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/609694379/original.jpg","l":"CC BY-NC","by":"A Rocha Portugal","g":0,"mo":[5,5,9,15,17,11,7,9,4,4,3,6]},"44":{"n":2,"t":127022,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/307335017/original.jpg","l":"CC BY-NC","by":"Sergio Chozas","g":0,"mo":[0,0,0,0,0,0,0,1,0,1,0,0]},"45":{"n":32,"t":468121,"p":"https://inaturalist-open-data.s3.amazonaws.com/photos/610741655/original.jpg","l":"CC BY-NC","by":"simply_antastic","g":0,"mo":[5,3,0,4,2,1,4,4,1,4,2,2]}};
+_LEGACY_SPECIES.forEach(s=>{ if(INAT[s.id]) s.inat=INAT[s.id]; });
+const INMON=['J','F','M','A','M','J','J','A','S','O','N','D'];
+function inatQ(s){ return encodeURIComponent((s.sci||'').replace(/ spp\.$/,'')); }
+function inatLink(s){ return (s.inat&&s.inat.t)?('https://www.inaturalist.org/taxa/'+s.inat.t):('https://www.inaturalist.org/taxa/search?q='+inatQ(s)); }
+function inatImg(s){ if(!s.inat||!s.inat.p) return '';
+  const med=s.inat.p.replace('/original.','/medium.');
+  return `<figure class="inatfig"><a href="${inatLink(s)}" target="_blank" rel="noopener"><img loading="lazy" src="${med}" alt="Photograph of ${esc(s.en)} (${esc(s.sci)})" onerror="this.closest('.inatfig').style.display='none'"></a><figcaption class="inatcap">\u00A9 ${esc(s.inat.by)} \u00B7 ${esc(s.inat.l)} \u00B7 <a href="${inatLink(s)}" target="_blank" rel="noopener">via iNaturalist \u2197</a></figcaption></figure>`;
+}
+function inatStat(s){ if(!s.inat) return '';
+  const n=s.inat.n;
+  const val = n>0 ? (n.toLocaleString('en-GB')+' record'+(n===1?'':'s')+(s.inat.g?' (genus)':'')) : 'No records yet';
+  return `<div class="numrow"><span class="numlabel">iNaturalist \u00B7 Portugal</span><span class="numval2"><a class="inatlink" href="${inatLink(s)}" target="_blank" rel="noopener">${val} \u2197</a></span></div>`;
+}
+function inatSeason(s){ if(!s.inat||!s.inat.n) return ''; const mo=s.inat.mo||[]; const mx=Math.max.apply(null,mo); if(!mx) return '';
+  const mn=monthNow();
+  const bars=mo.map((c,i)=>{ const h=c?Math.max(8,Math.round(c/mx*100)):0; const now=(i+1)===mn;
+    return `<span class="inbar${now?' now':''}" title="${MONTHS[i]}: ${c} record${c===1?'':'s'}"><i style="height:${h}%"></i><b>${INMON[i]}</b></span>`; }).join('');
+  return `<div class="phen inatphen"><span class="numlabel">Observations by month on iNaturalist (Portugal)</span><span class="inatbars">${bars}</span></div>`;
+}
+
+/* ---------- more info: eyes, look-alikes, hunting style ---------- */
+const SIX_EYED = new Set(['Scytodidae','Sicariidae','Segestriidae','Dysderidae']);
+_LEGACY_SPECIES.forEach(s=>{ s.eyes = (s.fam==='Symphytognathidae') ? null : (SIX_EYED.has(s.fam) ? 6 : 8); });
+
+const SIMILAR = {
+  2:'Cellar spiders are often mistaken for harvestmen (which are not true spiders) and for the marbled cellar spider.',
+  4:'Easily confused with other large house and funnel-web spiders such as Tegenaria and Eratigena.',
+  7:'The banded abdomen is distinctive; the lobed argiope is a showy relative.',
+  9:'One of several grey wall jumpers; very like other Menemerus and small salticids.',
+  13:'Other flat, dark, bark-dwelling orb-weavers can look similar.',
+  17:'Hard to tell from other wolf spiders; the Mediterranean tarantula is similar but much larger.',
+  18:'Often mistaken for a true widow, but the false widow is far less significant.',
+  21:'The harmless false widow (Steatoda) is the usual look-alike.',
+  24:'Other small black-and-white jumpers can look similar.',
+  25:'Pale crab spiders such as Thomisus and Runcinia are easily confused with it.',
+  26:'Very like the less common Dysdera erythrina, which tends to avoid houses.',
+  27:'Very like the common long-bodied cellar spider, but more marbled and oval.',
+  38:'Looks like a giant version of the common wolf spider.',
+  42:'Resembles the Mediterranean black widow, but lives out in open country.',
+};
+_LEGACY_SPECIES.forEach(s=>{ if(SIMILAR[s.id]) s.similar=SIMILAR[s.id]; });
+
+function huntFor(s){
+  if (s.id===14) return 'Spits a zig-zag of sticky gum over prey from a short distance, then bites.';
+  if (s.id===26) return 'A night hunter specialising in armoured woodlice that few other predators tackle.';
+  if (s.id===33) return 'Stalks and pounces on insects among plants, lynx-like, using sharp eyesight.';
+  if (s.id===35) return 'Leaves its silk sac after dark to hunt insects on foot.';
+  if (s.id===41) return 'Hunts ants, moving among them as a mimic.';
+  if (s.id===43) return 'Darts out in a tight circle to wrap small insects, especially ants, in silk.';
+  return ({
+    orb:'Spins an orb web and waits for flying insects to hit it.',
+    tangle:'Builds a tangled cobweb and snares prey that blunders in.',
+    funnel:'Spreads a sheet web with a funnel retreat, then dashes out to seize prey.',
+    tube:'Lives in a silk tube and strikes prey that trips its silk lines.',
+    jumper:'Stalks prey by sight, then pounces — it builds no snare web.',
+    crab:'Sits still on flowers and ambushes visitors with open front legs.',
+    huntsman:'A fast, free-running hunter that chases prey down.',
+    wolf:'A ground hunter that runs prey down by sight.',
+    recluse:'A nocturnal wanderer that hunts on foot in dark corners.',
+    specialist:'An active hunter with specialised habits.'
+  }[s.type]||'An active hunter.');
+}
+
+const RANKS = [
+  {min:0,    name:'Curious Passer-by'},
+  {min:40,   name:'Spotter'},
+  {min:120,  name:'Field Observer'},
+  {min:260,  name:'Naturalist'},
+  {min:470,  name:'Field Arachnologist'},
+  {min:740,  name:'Aracnólogo'},
+  {min:1050, name:'Aracnólogo-mor'},
+];
+
+const ACHIEVEMENTS = [
+  {id:'first', glyph:'\u2728', name:'First Find', desc:'Log your first spider',
+    test:(L)=>count(L)>=1},
+  {id:'ten', glyph:'\uD83D\uDCD2', name:'Tile Collector', desc:'Log 10 species',
+    test:(L)=>count(L)>=10},
+  {id:'twentyfive', glyph:'\uD83D\uDDC3\uFE0F', name:'Serious Spotter', desc:'Log 25 species',
+    test:(L)=>count(L)>=25},
+  {id:'complete', glyph:'\uD83C\uDFC6', name:'Aracnário Complete', desc:'Log every species',
+    test:(L)=>count(L)>=SPECIES.length},
+  {id:'orbs', glyph:'\uD83D\uDD78\uFE0F', name:'Web Spinner', desc:'Log 4 orb-weavers',
+    test:(L)=>loggedSpecies(L).filter(s=>s.type==='orb').length>=4},
+  {id:'jumpers', glyph:'\uD83D\uDC40', name:'Eight Eyes', desc:'Log 3 jumping spiders',
+    test:(L)=>loggedSpecies(L).filter(s=>s.type==='jumper').length>=3},
+  {id:'crabs', glyph:'\uD83C\uDF3C', name:'Flower Ambush', desc:'Log 3 crab / flower spiders',
+    test:(L)=>loggedSpecies(L).filter(s=>s.type==='crab').length>=3},
+  {id:'night', glyph:'\uD83C\uDF19', name:'Night Shift', desc:'Log 4 nocturnal species',
+    test:(L)=>loggedSpecies(L).filter(s=>s.noct).length>=4},
+  {id:'fam8', glyph:'\uD83E\uDDEC', name:'Family Naturalist', desc:'Log species from 8 different families',
+    test:(L)=>familiesGot(L).size>=8},
+  {id:'famall', glyph:'\uD83D\uDDFA\uFE0F', name:'Whole Tree of Life', desc:'Log a species from every family',
+    test:(L)=>familiesGot(L).size>=familiesAll().length},
+  {id:'endemic', glyph:'\uD83C\uDDF5\uD83C\uDDF9', name:'Iberian Treasure', desc:'Log an Iberian or Portuguese endemic',
+    test:(L)=>loggedSpecies(L).some(s=>s.endemic)},
+  {id:'big', glyph:'\uD83E\uDDB5', name:'Big Game', desc:'Log a giant (25 mm body or more)',
+    test:(L)=>loggedSpecies(L).some(s=>(s.mm||0)>=25)},
+  {id:'tiny', glyph:'\uD83D\uDD2C', name:'Tiny Wonders', desc:'Log a minute spider (3 mm or less)',
+    test:(L)=>loggedSpecies(L).some(s=>(s.mm||99)<=3)},
+  {id:'venomless', glyph:'\uD83D\uDEE1\uFE0F', name:'No Venom Needed', desc:'Log the spider with no venom glands',
+    test:(L)=>!!L[36]},
+  {id:'legend', glyph:'\uD83D\uDC51', name:'Legendary Encounter', desc:'Log the Gibraltar funnel-web',
+    test:(L)=>!!L[22]},
+  {id:'mythic', glyph:'\uD83E\uDE99', name:'Into the Dark', desc:'Log the Portuguese cave midget',
+    test:(L)=>!!L[23]},
+  {id:'care', glyph:'\u26A0\uFE0F', name:'Handle With Care', desc:'Log both medically significant species',
+    test:(L)=>loggedSpecies(L).filter(s=>s.medical.level==='significant').length>=2},
+  {id:'notes', glyph:'\uD83D\uDCDD', name:'Field Notes', desc:'Add notes to 5 sightings',
+    test:(L)=>noteCount(L)>=5},
+  {id:'places', glyph:'\uD83E\uDDED', name:'Ground Covered', desc:'Record sightings at 4 different places',
+    test:(L)=>placeCount(L)>=4},
+  {id:'fav', glyph:'\u2B50', name:'Curator', desc:'Mark 5 favourites',
+    test:(L)=>favs.size>=5},
+];
+
+/* ---------- state ---------- */
+const STORAGE_KEY = 'aracnario:v1';
+let logged = {};            // id -> { date, location, note }
+let persistOK = true;
+let prevEarned = new Set();
+let filterMode = 'all';
+let rarityFilter = null;
+let sortMode = 'num';
+let nearbyCounts = null;     // Map: tid -> local observation count (within radius)
+let nearbyMeta = null;       // { radius, total, inCatalog }
+const NEARBY_RADIUS_KM = 30;
+let searchText = '';
+let openId = null;
+let view = 'cat';
+let vivTimers = [];
+
+/* ---------- vivarium v-pet state ---------- */
+const ROSTER_MAX = 6;
+let vivRoster = [];         // array of species ids brought into the tank (favourites you chose)
+let vivPets = {};           // id -> { hunger, mood, careXp, lastTick, lastPet }
+const VIV_STAGES = ['Hatchling','Juvenile','Adult','Veteran','Elder'];
+const VIV_LEVEL_XP = [0,40,120,300,600];
+const HUNGER_HALFLIFE_MS = 30*3600*1000;     // ~30h to drift from 100 to ~50
+function levelFor(xp){ let lv=0; for(let i=0;i<VIV_LEVEL_XP.length;i++){ if(xp>=VIV_LEVEL_XP[i]) lv=i; } return lv; }
+function ensurePet(id){
+  if(!vivPets[id]) vivPets[id] = { hunger:80, mood:70, careXp:0, lastTick:Date.now(), lastPet:0 };
+  return vivPets[id];
+}
+function tickPet(p){
+  const now=Date.now(), dt=Math.max(0, now-(p.lastTick||now));
+  if(dt<=0){ p.lastTick=now; return; }
+  const decay = 50*(1-Math.pow(0.5, dt/HUNGER_HALFLIFE_MS));   // approaches -50 over one half-life
+  p.hunger = Math.max(0, p.hunger - decay);
+  const moodPull = p.hunger<30 ? -decay*1.4 : -decay*0.5;
+  p.mood = Math.max(0, Math.min(100, p.mood + moodPull));
+  p.lastTick = now;
+}
+function tickAllPets(){ vivRoster.forEach(id=>tickPet(ensurePet(id))); }
+
+const $ = s => document.querySelector(s);
+const count = L => Object.keys(L).length;
+const byId = id => SPECIES.find(s=>s.id===id);
+const loggedSpecies = L => Object.keys(L).map(k=>byId(+k)).filter(Boolean);
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- XP, favourites & derived helpers ---------- */
+const XP = { common:10, uncommon:20, rare:35, veryrare:60, legendary:100, mythic:150 };
+let favs = new Set();
+const isFav = id => favs.has(id);
+const xpFor = L => loggedSpecies(L).reduce((sum,s)=>sum + (XP[s.rarity]||0), 0);
+const totalXP = () => SPECIES.reduce((sum,s)=>sum + (XP[s.rarity]||0), 0);
+const familiesAll = () => Array.from(new Set(SPECIES.map(s=>s.fam))).sort();
+const familiesGot = L => new Set(loggedSpecies(L).map(s=>s.fam));
+const monthNow = () => new Date().getMonth()+1;
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+let MAXMM = Math.max(1, ...SPECIES.map(s=>s.mm||0));   // recomputed after the live catalogue loads
+const noteCount = L => Object.values(L).filter(r=>r&&r.note&&r.note.trim()).length;
+const placeCount = L => new Set(Object.values(L).map(r=>(r&&r.location||'').trim().toLowerCase()).filter(Boolean)).size;
+
+/* ---------- persistence ---------- */
+let persistStore = null;   // 'idb' | 'local' | 'artifact' | null
+function localStorageOK(){
+  try{ const k='__ar_test__'+Math.random(); localStorage.setItem(k,'1'); localStorage.removeItem(k); return true; }
+  catch(e){ return false; }
+}
+function applyState(p){
+  if(!p) return;
+  // Accept either a parsed object (IndexedDB) or a JSON string (legacy).
+  if(typeof p === 'string'){ try{ p = JSON.parse(p); }catch(e){ return; } }
+  logged = p.logged || {};
+  favs = new Set(Array.isArray(p.favs) ? p.favs : []);
+  vivRoster = Array.isArray(p.viv && p.viv.roster) ? p.viv.roster.filter(id=>logged[id]) : [];
+  vivPets = (p.viv && p.viv.pets) || {};
+  // note: sprite style intentionally NOT restored — always open on the detailed spiders
+}
+async function loadData(){
+  // 1) IndexedDB — primary durable store. Migrates old localStorage data once.
+  if (window.AracnarioDB && AracnarioDB.available){
+    try{
+      persistStore = 'idb'; persistOK = true;
+      await AracnarioDB.migrateFromLocal(STORAGE_KEY);
+      const val = await AracnarioDB.get(STORAGE_KEY);
+      if (val != null) applyState(val);
+      return;
+    }catch(e){ console.warn('[aracnario] IndexedDB load failed, falling back:', e); }
+  }
+  // 2) localStorage (survives between visits, smaller/older browsers)
+  if (localStorageOK()){
+    persistStore = 'local'; persistOK = true;
+    try{ const raw = localStorage.getItem(STORAGE_KEY); if (raw) applyState(JSON.parse(raw)); }catch(e){}
+    return;
+  }
+  // 3) fallback: artifact runtime storage, if present
+  try{
+    if (typeof window !== 'undefined' && window.storage && typeof window.storage.get === 'function'){
+      persistStore = 'artifact'; persistOK = true;
+      const res = await window.storage.get(STORAGE_KEY);
+      if (res && res.value) applyState(JSON.parse(res.value));
+      return;
+    }
+  }catch(e){}
+  persistOK = false;   // 4) in-memory only
+}
+async function saveData(){
+  if (!persistOK) return;
+  const state = {logged, favs:[...favs], viv:{roster:vivRoster, pets:vivPets}};
+  try{
+    if (persistStore==='idb') await AracnarioDB.set(STORAGE_KEY, state);
+    else if (persistStore==='local') localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    else if (persistStore==='artifact') await window.storage.set(STORAGE_KEY, JSON.stringify(state));
+  }catch(e){ console.error(e); toast('Couldn\u2019t save just now \u2014 your log may not persist.'); }
+}
+
+/* ============================================================
+   Spider art — one parametric generator, stylised (not to scale)
+   ============================================================ */
+/* Leg poses — one side, front→back, each [kneeDx,kneeDy,footDx,footDy] from the head.
+   Differentiated by posture: forward/back clumping, laterigrade sprawl, short vs thread. */
+const LEGS = {
+  orb:    [[-15,-16,-27,-31],[-19,-6,-35,-15],[-19,8,-35,16],[-15,17,-27,33]],   // I/II forward, III/IV back (clumped)
+  wolf:   [[-16,-12,-30,-22],[-21,-3,-39,-6],[-21,9,-39,15],[-16,18,-30,32]],    // even, sturdy radial
+  jumper: [[-14,-15,-26,-25],[-17,-5,-30,-7],[-16,7,-28,13],[-13,16,-23,26]],    // stout but long enough to read clearly
+  ground: [[-14,-11,-25,-19],[-18,-3,-33,-6],[-18,8,-33,13],[-14,16,-25,28]],    // slim, neat
+  crab:   [[-28,-14,-48,-18],[-34,-3,-50,-1],[-23,7,-40,11],[-15,14,-26,23]],    // laterigrade: front pairs long, near-horizontal
+  huntsman:[[-28,-11,-48,-22],[-33,-2,-56,-4],[-31,7,-54,9],[-22,15,-40,27]],    // wide flat sprawl
+  funnel: [[-15,-10,-26,-19],[-19,-1,-35,-2],[-21,11,-39,23],[-17,21,-31,42]],   // rear legs swept back
+  tube:   [[-15,-16,-25,-30],[-17,-9,-29,-21],[-17,-1,-30,-6],[-15,13,-26,24]],  // front three reach forward
+  recluse:[[-19,-13,-42,-30],[-25,-3,-54,-9],[-25,10,-54,16],[-19,20,-42,42]],   // long & leggy
+  long:   [[-18,-17,-48,-44],[-24,-5,-64,-15],[-24,11,-64,18],[-18,22,-48,52]],  // thread-thin daddy-longlegs
+  compact:[[-14,-10,-24,-16],[-18,-3,-30,-4],[-18,8,-30,12],[-14,14,-24,23]],    // small generic
+  micro:  [[-9,-5,-16,-10],[-11,-1,-19,-2],[-11,4,-19,8],[-9,8,-16,16]],
+};
+/* Abdomen shapes — rx/ry radii, dy = gap below head; shape:'point' tapers the rear. */
+const ABD = {
+  round:   {rx:18,ry:20,dy:26},
+  bulb:    {rx:21,ry:23,dy:28},                 // big bulbous belly (orb-weavers)
+  globe:   {rx:20,ry:21,dy:31},                 // big round on a longer stalk (widows)
+  oval:    {rx:15,ry:23,dy:27},
+  elong:   {rx:10,ry:28,dy:30},                 // long & thin
+  flat:    {rx:22,ry:14,dy:22},                 // wide (crab spiders)
+  teardrop:{rx:17,ry:24,dy:27, shape:'point'},  // pointed rear (Argiope, lynx)
+  egg:     {rx:13,ry:17,dy:23},                 // small (jumpers)
+};
+function legPath(ax,ay,kx,ky,fx,fy){
+  return `M${ax} ${ay} Q ${ax+kx} ${ay+ky} ${ax+fx} ${ay+fy}`;
+}
+function spiderSVG(art, mode){
+  return AracnarioSprites.spiderMon(art, mode);   // renderer lives in src/sprites.js (shared with the sprite lab)
+}
+
+function spiderNat(art, mode){
+  /* ---- detailed pixel-art renderer (higher-res "16/32-bit" look) ----
+     50x55 cells, 4-tone shaded body ramps, tapered + jointed legs, a waist
+     seam between cephalothorax and abdomen, and real eye clusters. Reuses
+     each species leg pose (LEGS), body shape (ABD) and marking. */
+  const sil = mode==='silhouette';
+  const bodyCol = sil ? 'var(--sil)' : (art.body||'#5b4636');
+  const legCol  = sil ? 'var(--sil)' : (art.leg||art.body||'#4a3a2e');
+  const bHi  = sil?bodyCol:shade(bodyCol, 32), bBase=bodyCol,
+        bSh  = sil?bodyCol:shade(bodyCol,-16), bDeep=sil?bodyCol:shade(bodyCol,-36),
+        spec = sil?bodyCol:shade(bodyCol, 52);
+  const hHi  = sil?bodyCol:shade(bodyCol, 16), hBase=sil?bodyCol:shade(bodyCol,-8),
+        hSh  = sil?bodyCol:shade(bodyCol,-24), hDeep=sil?bodyCol:shade(bodyCol,-38);
+  const legHi    = sil?legCol:shade(legCol, 20),
+        legEdge  = sil?legCol:shade(legCol,-20), legJoint=sil?legCol:shade(legCol,-34);
+  const outline  = sil?null:shade(legCol,-52);
+  const rim      = sil?null:shade(bodyCol, 46);   // top-edge rim light so dark species pop
+  const seam     = sil?null:shade(bodyCol,-44);
+
+  const C=2, COLS=50, ROWS=55;
+  const grid=Array.from({length:ROWS},()=>new Array(COLS).fill(null));
+  const inB=(x,y)=>x>=0&&x<COLS&&y>=0&&y<ROWS;
+  const set=(x,y,c)=>{ if(inB(x,y)) grid[y][x]=c; };
+  const cellOf=u=>Math.floor(u/C);
+  const fillRect=(c0,r0,w,h,c)=>{ for(let q=0;q<h;q++)for(let p=0;p<w;p++) set(c0+p,r0+q,c); };
+
+  const ax=50, ay=46;
+  const isMicro=art.style==='micro';
+  let cephRx=11,cephRy=13;
+  if(art.style==='compact'){cephRx=12;cephRy=13;}
+  if(art.style==='funnel'){cephRx=12;cephRy=14;}
+  if(art.style==='jumper'){cephRx=15;cephRy=16;}   // tall broad salticid "face", small body
+  if(art.style==='crab'){cephRx=12;cephRy=11;}     // low & wide
+  if(art.style==='huntsman'){cephRx=13;cephRy=12;}
+  if(art.style==='tube'){cephRx=10;cephRy=13;}
+  if(art.style==='recluse'){cephRx=10;cephRy=11;}
+  if(art.style==='long'){cephRx=8;cephRy=9;}       // tiny body, thread legs
+  if(isMicro){cephRx=6.5;cephRy=7;}
+  const a=ABD[art.abd]||ABD.oval;
+  const acx=ax, acy=ay+a.dy;
+  const offs=LEGS[art.style]||LEGS.orb;
+
+  function band(nx,ny,hi,base,sh,deep){
+    const lum=-(nx*0.6+ny*0.9);
+    return lum>=0.55?hi:(lum>=-0.12?base:(lum>=-0.62?sh:deep));
+  }
+  function ell(ux,uy,rx,ry,hi,base,sh,deep,shape){
+    const c0=cellOf(ux-rx),c1=cellOf(ux+rx),r0=cellOf(uy-ry),r1=cellOf(uy+ry);
+    for(let y=r0;y<=r1;y++)for(let x=c0;x<=c1;x++){
+      const ny=((y+.5)*C-uy)/ry;
+      let rxE=rx; if(shape==='point' && ny>0) rxE=rx*(1-0.55*ny);   // taper rear to a point
+      if(rxE<0.6) continue;
+      const nx=((x+.5)*C-ux)/rxE;
+      if(nx*nx+ny*ny<=1.015) set(x,y, sil?base:band(nx,ny,hi,base,sh,deep));
+    }
+  }
+  function seg(x0,y0,x1,y1,w0,w1){            // thin straight limb segment, tapering w0->w1
+    const dx=x1-x0, dy=y1-y0, L=Math.hypot(dx,dy)||1, steps=Math.max(6,Math.round(L));
+    const px=-dy/L, py=dx/L;
+    for(let i=0;i<=steps;i++){ const t=i/steps, ux=x0+dx*t, uy=y0+dy*t;
+      const w=Math.max(1,Math.round(w0+(w1-w0)*t)), half=Math.floor(w/2);
+      for(let s=-half;s<=half;s++) set(cellOf(ux+px*C*s), cellOf(uy+py*C*s), legCol);
+      if(!sil && half>0) set(cellOf(ux+px*C*half), cellOf(uy+py*C*half), legHi);   // top sheen
+    }
+  }
+  function leg(ox,oy,fx,fy){
+    // Sharp-knee leg: femur runs from the attachment (ox,oy) to a knee placed ~45% along the
+    // chord and bowed OUTWARD (radially away from the body centre), then the tibia tapers to
+    // the foot. The radial bow keeps every leg in its own angular sector so they bend like a
+    // real spider's and never cross. Geometry chosen with the user: sharp knee · thin · medium
+    // elbow (knee at kt=0.45, bend=4+L*0.30).
+    const fxp=ax+fx, fyp=ay+fy, L=Math.hypot(fxp-ox,fyp-oy)||1;
+    const kt=0.45, bx=ox+(fxp-ox)*kt, by=oy+(fyp-oy)*kt;
+    let rx=bx-ax, ry=by-ay; const rl=Math.hypot(rx,ry)||1; rx/=rl; ry/=rl;
+    const bend=4+L*0.30, kxp=bx+rx*bend, kyp=by+ry*bend;
+    seg(ox,oy,kxp,kyp, 2,2);                              // femur (thin)
+    seg(kxp,kyp,fxp,fyp, 2,1);                            // tibia (tapers to a point)
+    if(!sil) set(cellOf(kxp),cellOf(kyp),legJoint);       // knee
+  }
+
+  // Body is painted FIRST so legs draw fully on top and stay visible end-to-end (a big
+  // cephalothorax used to overpaint most of the leg, leaving only stub-like tips for
+  // big-headed styles like jumper). Legs attach right at the cephalothorax's edge.
+  ell(acx,acy,a.rx,a.ry,bHi,bBase,bSh,bDeep,a.shape);
+  if(!sil){
+    fillRect(cellOf(acx-a.rx*0.42), cellOf(acy-a.ry*0.52), 3,2, spec);   // glossy catch-light
+    set(cellOf(acx-a.rx*0.66), cellOf(acy-a.ry*0.28), rim);              // upper-left rim
+    set(cellOf(acx-a.rx*0.22), cellOf(acy-a.ry*0.68), rim);
+  }
+  ell(ax,ay,cephRx,cephRy,hHi,hBase,hSh,hDeep);
+  if(!sil) set(cellOf(ax-cephRx*0.45), cellOf(ay-cephRy*0.5), rim);      // head sheen
+  if(seam){ const jr=cellOf(ay+cephRy-2), cl=cellOf(ax-cephRx*0.8), cr=cellOf(ax+cephRx*0.8); for(let x=cl;x<=cr;x++) set(x,jr,seam); }
+
+  // Attach legs at staggered points down the SIDES of the cephalothorax (front->back), right
+  // at its edge, so adjacent knees sit in their own space and the full leg length reads clearly.
+  const nL=offs.length, sideX=cephRx*0.92;
+  offs.forEach(([,,fx,fy],i)=>{
+    const oy = ay - cephRy*0.82 + (nL>1 ? (i/(nL-1))*cephRy*1.7 : 0);
+    leg(ax-sideX, oy,  fx, fy);   // left  (fx is negative)
+    leg(ax+sideX, oy, -fx, fy);   // right
+  });
+  if(art.style==='funnel'){ const bc=cellOf(acx),br=cellOf(acy+a.ry)+1; fillRect(bc-3,br,2,3,legEdge); fillRect(bc+1,br,2,3,legEdge); }
+
+  if(!sil){
+    const m=art.marking, ac=cellOf(acx), ar=cellOf(acy);
+    const arx=Math.max(3,Math.round(a.rx/C)), ary=Math.max(3,Math.round(a.ry/C));
+    const ccx=cellOf(ax), spot=(x,y,c)=>fillRect(x,y,3,3,c);
+    const acc = art.accent || '#1c1714';   // palette accent drives most markings
+    if(m==='cross'){ const col='#ece6d6'; fillRect(ac-1,ar-ary+2,3,ary*2-4,col); fillRect(ac-arx+2,ar-1,arx*2-4,3,col); }
+    else if(m==='spots13'){ const col=acc; [[0,-ary+3],[-arx+4,-1],[arx-4,-1],[0,2],[-arx+4,ary-5],[arx-4,ary-5],[0,ary-4]].forEach(([dx,dy])=>spot(ac+dx-1,ar+dy-1,col)); }
+    else if(m==='fourspots'){ const col=acc; [[-arx+5,-1],[arx-5,-1],[-arx+5,ary-5],[arx-5,ary-5]].forEach(([dx,dy])=>spot(ac+dx-1,ar+dy-1,col)); }
+    else if(m==='cream'){ const col=acc; for(let r=0;r<ary;r++){ const w=Math.max(3,(arx-1)*2-Math.floor(r*1.3)); fillRect(ac-Math.floor(w/2),ar-ary+2+r,w,1,col); } }
+    else if(m==='cap'){ const col=acc; for(let r=0;r<Math.ceil(ary*0.75);r++){ const w=(arx*2-1)-Math.floor(r*1.2); fillRect(ac-Math.floor(w/2),ar-ary+1+r,w,1,col); } }
+    else if(m==='bands'){ const col=acc; [-ary+4,-1,ary-5].forEach(dy=>fillRect(ac-arx+2,ar+dy,arx*2-4,3,col)); }
+    else if(m==='stripesBW'){ const col='#e9e9e9'; [-ary+4,-1,ary-5].forEach(dy=>fillRect(ac-arx+3,ar+dy,arx*2-6,2,col)); }
+    else if(m==='maleStripe'){ const col=acc; fillRect(ac-1,ar-ary+2,3,ary*2-4,col); }
+    else if(m==='humps'){ const col=shade(bodyCol,22); spot(ac-arx+3,ar-ary+3,col); spot(ac+arx-5,ar-ary+3,col); }
+    else if(m==='lobes'){ const col=shade(bodyCol,20); for(let k=0;k<22;k++){ const th=Math.PI*2*k/22;
+        set(ac+Math.round(Math.cos(th)*arx),ar+Math.round(Math.sin(th)*ary),col);
+        set(ac+Math.round(Math.cos(th)*(arx-1)),ar+Math.round(Math.sin(th)*(ary-1)),col); } }
+    else if(m==='violin'){ const col='#4a3526', cr=cellOf(ay); fillRect(ccx-1,cr-2,3,4,col); set(ccx,cr+2,col); set(ccx,cr+3,col); }
+
+    const headTop=Math.max(0,cellOf(ay-cephRy)), dark='#0b0b0b', hi='#d6ecff';
+    if(art.eyes==='big'){
+      fillRect(ccx-5,headTop+2,4,4,dark); fillRect(ccx+2,headTop+2,4,4,dark);
+      fillRect(ccx-5,headTop+2,2,2,hi);   fillRect(ccx+2,headTop+2,2,2,hi);
+      set(ccx-3,headTop+6,dark); set(ccx+3,headTop+6,dark);
+      set(ccx-5,headTop+6,dark); set(ccx+5,headTop+6,dark);
+    } else if(!isMicro && art.eyes!=='none'){
+      const fr=headTop+3, n=art.eyes||8, row = n>=8?[-3,-1,1,3]:[-2,0,2];
+      row.forEach(dx=>set(ccx+dx,fr,dark));
+      row.forEach(dx=>set(ccx+dx,fr+2,dark));
+    }
+    const fr0=Math.max(0,headTop+1);
+    if(art.fang==='green'){ const g='#2fae6a',gd=shade('#2fae6a',-24); fillRect(ccx-2,fr0-1,2,2,g); fillRect(ccx+1,fr0-1,2,2,g); set(ccx-2,fr0+1,gd); set(ccx+2,fr0+1,gd); }
+    else { const fc=shade(bodyCol,-30); set(ccx-1,fr0-1,fc); set(ccx+1,fr0-1,fc); }
+  }
+
+  if(!sil){
+    const edges=[];
+    for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){
+      if(grid[y][x]!=null) continue;
+      if((y>0&&grid[y-1][x]!=null)||(y<ROWS-1&&grid[y+1][x]!=null)||(x>0&&grid[y][x-1]!=null)||(x<COLS-1&&grid[y][x+1]!=null)) edges.push([x,y]);
+    }
+    edges.forEach(([x,y])=>{ grid[y][x]=outline; });
+  }
+
+  let rects='';
+  for(let y=0;y<ROWS;y++){ let x=0;
+    while(x<COLS){ const c=grid[y][x]; if(c==null){x++;continue;}
+      const x0=x; while(x<COLS&&grid[y][x]===c) x++;
+      rects+=`<rect x="${x0*C}" y="${y*C}" width="${(x-x0)*C}" height="${C}" fill="${c}"/>`;
+    }
+  }
+  return `<svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg" role="img" shape-rendering="crispEdges">${rects}</svg>`;
+}
+
+function shade(hex, pct){
+  if (!hex || hex[0]!=='#') return hex;
+  let h=hex.slice(1); if(h.length===3) h=h.split('').map(c=>c+c).join('');
+  let r=parseInt(h.slice(0,2),16), g=parseInt(h.slice(2,4),16), b=parseInt(h.slice(4,6),16);
+  const f=v=>Math.max(0,Math.min(255,Math.round(v+(255*pct/100))));
+  return `#${[f(r),f(g),f(b)].map(v=>v.toString(16).padStart(2,'0')).join('')}`;
+}
+
+/* ============================================================
+   Rendering
+   ============================================================ */
+function rankFor(n){ let r=RANKS[0]; for(const x of RANKS){ if(n>=x.min) r=x; } return r; }
+function nextRank(n){ for(const x of RANKS){ if(x.min>n) return x; } return null; }
+
+function renderHeader(){
+  const n = count(logged);
+  const xp = xpFor(logged), maxXP = totalXP();
+  const rank = rankFor(xp), nxt = nextRank(xp);
+  $('#rankName').textContent = rank.name;
+  $('#rankCount').textContent = `${n} / ${SPECIES.length} logged \u00B7 ${xp} XP`;
+  const lo = rank.min, hi = nxt ? nxt.min : maxXP;
+  const pct = hi>lo ? Math.min(100, ((xp-lo)/(hi-lo))*100) : 100;
+  $('#rankMeter').style.width = `${pct.toFixed(1)}%`;
+  $('#rankNext').textContent = nxt ? `${nxt.min - xp} XP to \u201C${nxt.name}\u201D` : `Top rank \u2014 ${xp} of ${maxXP} XP collected.`;
+
+  // rarity breakdown
+  const order = ['common','uncommon','rare','veryrare','legendary','mythic'];
+  const tot={}, got={};
+  order.forEach(r=>{tot[r]=0;got[r]=0;});
+  SPECIES.forEach(s=>{ tot[s.rarity]++; if(logged[s.id]) got[s.rarity]++; });
+  $('#breakdown').innerHTML = order.map(r=>
+    `<span class="pip"><span class="dot" style="background:${RARITY[r].color}"></span>${RARITY[r].label} ${got[r]}/${tot[r]}</span>`
+  ).join('');
+}
+
+function renderAchievements(){
+  $('#achRow').innerHTML = ACHIEVEMENTS.map(a=>{
+    const earned = a.test(logged);
+    return `<div class="badge ${earned?'earned':''}" title="${esc(a.desc)}">
+      <span class="glyph">${a.glyph}</span>
+      <span><span class="bt">${esc(a.name)}</span><br><span class="bd">${esc(a.desc)}</span></span>
+    </div>`;
+  }).join('');
+}
+
+/* ---------- "Near me": location-aware subset (privacy-first via the data layer) ---------- */
+function applyNearby(slice){
+  nearbyCounts = new Map();
+  (slice.rows||[]).forEach(r=>{ if(r.tid) nearbyCounts.set(r.tid, r.count||0); });
+  nearbyMeta = { radius: slice.radius||NEARBY_RADIUS_KM, total: slice.total||0,
+                 inCatalog: SPECIES.filter(s=>nearbyCounts.has(s.id)).length };
+}
+async function loadNearby(){
+  if(!window.AracnarioINat){ toast('Live data unavailable.'); return false; }
+  toast('Finding spiders near you…');
+  let loc=null;
+  try{ loc = await AracnarioINat.getCoarseLocation(); }catch(e){ loc=null; }
+  if(loc){
+    try{ applyNearby(await AracnarioINat.fetchNearby(loc.lat, loc.lng, NEARBY_RADIUS_KM)); return true; }
+    catch(e){ /* offline: fall through to cache */ }
+  }
+  try{
+    const cached = window.AracnarioDB && await AracnarioDB.get('nearby:last');
+    if(cached && cached.rows){ applyNearby(cached); toast(loc?'Offline — showing your last area.':'Location unavailable — showing your last area.'); return true; }
+  }catch(e){}
+  toast(loc?'Couldn’t reach iNaturalist — try again online.':'Couldn’t get your location — check permissions.');
+  return false;
+}
+
+function visibleSpecies(){
+  let list = SPECIES.slice();
+  if (filterMode==='logged') list = list.filter(s=>logged[s.id]);
+  else if (filterMode==='unlogged') list = list.filter(s=>!logged[s.id]);
+  else if (filterMode==='fav') list = list.filter(s=>isFav(s.id));
+  else if (filterMode==='nearby') list = list.filter(s=>nearbyCounts && nearbyCounts.has(s.id));
+  if (rarityFilter) list = list.filter(s=>s.rarity===rarityFilter);
+  if (searchText){
+    const q=searchText.toLowerCase();
+    list = list.filter(s=> (s.en+' '+s.pt+' '+s.sci+' '+s.fam+' '+TYPES[s.type]).toLowerCase().includes(q));
+  }
+  if (sortMode==='name') list.sort((a,b)=>a.en.localeCompare(b.en));
+  else if (sortMode==='rarity') list.sort((a,b)=> RARITY[a.rarity].order-RARITY[b.rarity].order || a.id-b.id);
+  else if (sortMode==='fam') list.sort((a,b)=> a.fam.localeCompare(b.fam) || a.id-b.id);
+  else if (sortMode==='size') list.sort((a,b)=> (b.mm||0)-(a.mm||0) || (+a.num)-(+b.num));
+  else if (filterMode==='nearby' && nearbyCounts)              // "near me" defaults to most-seen-here first
+    list.sort((a,b)=> (nearbyCounts.get(b.id)||0)-(nearbyCounts.get(a.id)||0) || (+a.num)-(+b.num));
+  else list.sort((a,b)=>(+a.num)-(+b.num));   // "Dex no." = abundance rank order
+  return list;
+}
+
+function tileHTML(s){
+  const seen = !!logged[s.id];
+  const rc = RARITY[s.rarity].color;
+  const art = spiderSVG(s.art, seen?'full':'silhouette');
+  return `<button class="tile ${seen?'logged':'unlogged'}" style="--rar:${rc}" data-id="${s.id}" aria-label="${esc(s.en)} ${seen?'(logged)':'(not yet logged)'}">
+    <span class="rar-pill">${seen?RARITY[s.rarity].label:'???'}</span>
+    <span class="num">#${s.num}</span>
+    <span class="art">${art}</span>
+    ${seen?'':'<span class="qmark">?</span>'}
+    <span class="nm">${esc(s.en)}</span>
+    <span class="sci">${seen?esc(s.sci):esc(s.sci)+' &middot; tap to log'}</span>
+    <span class="seen-tag"><span class="chk">\u2713</span> Logged${logged[s.id]&&logged[s.id].date?' \u00B7 '+esc(fmtDate(logged[s.id].date)):''}</span>
+    <span class="favstar${isFav(s.id)?' on':''}" data-fav="${s.id}" role="button" tabindex="-1" aria-label="Toggle favourite" title="${isFav(s.id)?'In favourites':'Add to favourites'}">${isFav(s.id)?'\u2605':'\u2606'}</span>
+  </button>`;
+}
+
+function renderGrid(){
+  const list = visibleSpecies();
+  const n = count(logged);
+  if (filterMode==='nearby' && nearbyMeta){
+    $('#countLine').textContent = `${list.length} species recorded within ~${nearbyMeta.radius} km of you \u00B7 most-seen first \u00B7 ${n} logged`;
+  } else {
+    $('#countLine').textContent = `Showing ${list.length} of ${SPECIES.length} species \u00B7 ${n} logged`;
+  }
+  if (!list.length){
+    const msg = filterMode==='nearby' ? 'No catalogued spiders recorded near you yet \u2014 try again elsewhere or tap \u201CAll\u201D.' : 'No species match that filter.';
+    $('#grid').innerHTML = `<div class="empty">${msg}</div>`; return;
+  }
+  $('#grid').innerHTML = list.map(tileHTML).join('');
+}
+
+function fmtDate(iso){
+  if(!iso) return '';
+  const d=new Date(iso+'T00:00:00');
+  if(isNaN(d)) return iso;
+  return d.toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'});
+}
+function todayISO(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+
+/* ---------- detail modal ---------- */
+function openDetail(id){
+  openId=id;
+  const s=byId(id); if(!s) return;
+  const seen=!!logged[id]; const rc=RARITY[s.rarity].color;
+  const rec = logged[id]||{};
+  const medClass = s.medical.level;
+  const medLabel = medClass==='harmless'?'Harmless to humans':medClass==='minor'?'Bite painful, not dangerous':medClass==='significant'?'Medically significant':'Not assessed';
+  const medIcon = medClass==='harmless'?'\u2713':medClass==='minor'?'!':medClass==='significant'?'\u26A0':'?';
+
+  const sizePct = Math.max(2, Math.round((s.mm||0)/MAXMM*100));
+  const mnow = monthNow();
+  const monthDots = MONTHS.map((mname,i)=>{ const m=i+1; const on=(s.months||[]).includes(m); const now=m===mnow;
+    return `<span class="mdot${on?' on':''}${now?' now':''}" title="${mname}${on?' \u2014 active':''}">${mname[0]}</span>`; }).join('');
+  const xpVal = XP[s.rarity]||0;
+  const endemicBadge = s.endemic ? `<span class="endemic-badge" title="Restricted natural range">Endemic \u00B7 ${esc(s.endemic)}</span>` : '';
+
+  const stats = [
+    ['Size', s.size],['Active', s.active],['Web', s.web],
+    ['Habitat', s.habitat],['Diet', s.diet],['In Portugal', s.region],
+  ].filter(([k,v])=>v).map(([k,v])=>`<div class="stat"><div class="k">${esc(k)}</div><div class="v">${esc(v)}</div></div>`).join('');
+
+  const logInner = seen
+    ? `<div class="logged-state"><span>\u2713 Logged${rec.date?' on '+esc(fmtDate(rec.date)):''}</span></div>
+       <div class="field"><label for="f-date">Date seen</label><input id="f-date" type="date" value="${esc(rec.date||todayISO())}"></div>
+       <div class="field"><label for="f-loc">Where (optional)</label><input id="f-loc" type="text" maxlength="80" placeholder="e.g. Arrábida, garden wall&hellip;" value="${esc(rec.location||'')}"></div>
+       <div class="field"><label for="f-note">Field note (optional)</label><textarea id="f-note" maxlength="400" placeholder="What was it doing? Web, colour, size&hellip;">${esc(rec.note||'')}</textarea></div>
+       <div class="logactions">
+         <button class="btn primary" data-act="save">Save changes</button>
+         <button class="btn danger" data-act="remove">Remove from log</button>
+       </div>`
+    : `<div class="field"><label for="f-date">Date seen</label><input id="f-date" type="date" value="${todayISO()}"></div>
+       <div class="field"><label for="f-loc">Where (optional)</label><input id="f-loc" type="text" maxlength="80" placeholder="e.g. Arr&aacute;bida, garden wall&hellip;"></div>
+       <div class="field"><label for="f-note">Field note (optional)</label><textarea id="f-note" maxlength="400" placeholder="What was it doing? Web, colour, size&hellip;"></textarea></div>
+       <div class="logactions"><button class="btn primary" data-act="log">Mark as seen \u2713</button></div>`;
+
+  $('#modal').innerHTML = `
+    <div class="stamp" id="stamp">Seen \u2713</div>
+    <button class="closeb" data-act="close" aria-label="Close">\u00D7</button>
+    <div class="m-top" style="--rar:${rc}">
+      <div class="m-art">${spiderSVG(s.art,'full')}</div>
+      <div class="m-head">
+        <div class="num">#${s.num}</div>
+        <h2 id="m-title">${esc(s.en)}</h2>
+        ${s.pt?`<div class="pt">${esc(s.pt)}</div>`:''}
+        <div class="sci">${esc(s.sci)}</div>
+        <div class="fam">Family ${esc(s.fam)}</div>
+        <div class="tax">Class Arachnida \u00B7 Order Araneae</div>
+        <span class="rar-badge">${RARITY[s.rarity].label}</span>
+        <span class="xp-chip" title="XP earned for logging this species">+${xpVal} XP</span>
+        ${endemicBadge}
+        <div class="typechips">
+          <span class="tchip">${esc(TYPES[s.type])}</span>
+          <span class="tchip">${s.noct?'Nocturnal':'Day-active'}</span>
+        </div>
+        <button class="favbtn${isFav(id)?' on':''}" data-fav="${id}">${isFav(id)?'\u2605 In favourites':'\u2606 Add to favourites'}</button>
+      </div>
+    </div>
+    <div class="m-body">
+      ${inatImg(s)}
+      <div class="stats">${stats}</div>
+      <div class="numbers">
+        ${s.mm?`<div class="numrow"><span class="numlabel">Body length</span><span class="sizebar" aria-hidden="true"><i style="width:${sizePct}%"></i></span><span class="numval">~${s.mm} mm</span></div>`:''}
+        <div class="numrow"><span class="numlabel">Lifespan</span><span class="numval2">${esc(s.lifespan||'\u2014')}</span></div>
+        <div class="numrow"><span class="numlabel">Eyes</span><span class="numval2">${s.eyes?(s.eyes+' eyes'):'Reduced / hard to count'}</span></div>
+        ${inatStat(s)}
+        <div class="phen"><span class="numlabel">When adults are most often seen</span><span class="months">${monthDots}</span></div>
+        ${inatSeason(s)}
+      </div>
+      <p class="desc">${esc(s.desc)}</p>
+      <div class="lore">
+        ${s.etym?`<div class="loreitem"><span class="lk2">Name</span><span>${esc(s.etym)}</span></div>`:''}
+        ${s.idTip?`<div class="loreitem"><span class="lk2">Tell it apart</span><span>${esc(s.idTip)}</span></div>`:''}
+        <div class="loreitem"><span class="lk2">How it hunts</span><span>${esc(huntFor(s))}</span></div>
+        ${s.similar?`<div class="loreitem"><span class="lk2">Look-alikes</span><span>${esc(s.similar)}</span></div>`:''}
+      </div>
+      ${s.fact?`<div class="funfact"><b>Did you know</b> &mdash; ${esc(s.fact)}</div>`:''}
+      <div class="med ${medClass}"><div class="ic">${medIcon}</div><div><span class="lvl">${esc(medLabel)}</span>${esc(s.medical.text)}</div></div>
+      <div class="logbox">
+        <h3>Your sighting</h3>
+        ${logInner}
+      </div>
+    </div>`;
+  $('#scrim').classList.add('open');
+  document.body.style.overflow='hidden';
+  const cb=$('.closeb'); if(cb) cb.focus();
+  if(typeof enrichDetail==='function') enrichDetail(s);   // lazy Wikipedia + seasonality
+}
+function closeDetail(){
+  $('#scrim').classList.remove('open');
+  document.body.style.overflow='';
+  openId=null;
+}
+
+function collectFields(){
+  const d=$('#f-date'), l=$('#f-loc'), n=$('#f-note');
+  return { date:(d&&d.value)||todayISO(), location:(l&&l.value||'').trim(), note:(n&&n.value||'').trim() };
+}
+
+async function logSpecies(id, fromButton){
+  const fresh = !logged[id];
+  logged[id] = collectFields();
+  await saveData();
+  if (fresh){
+    const st=$('#stamp'); if(st){ st.classList.remove('go'); void st.offsetWidth; st.classList.add('go'); }
+  }
+  refreshAll(id, fresh);
+  checkAchievements();
+  // refresh modal log section to "logged" state
+  const s=byId(id);
+  if (openId===id) setTimeout(()=>{ if(openId===id) openDetail(id); }, fresh?650:0);
+  if (fresh && count(logged)===SPECIES.length){ confettiBurst(); setTimeout(()=>toast('\uD83C\uDFC6 Aracn\u00E1rio complete \u2014 all '+SPECIES.length+' species logged!'), 700); }
+  else if (fresh) toast(`<b>#${s.num}</b> ${esc(s.en)} added to your Aracn\u00E1rio.`);
+  else toast('Sighting updated.');
+}
+async function removeSpecies(id){
+  delete logged[id];
+  await saveData();
+  refreshAll();
+  checkAchievements();
+  if(openId===id) openDetail(id);
+  toast('Removed from your log.');
+}
+
+function refreshAll(justId, animate){
+  renderHeader(); renderAchievements();
+  // re-render only changed tile if grid already present and not filtered out
+  renderGrid();
+  renderInSeason();
+  if (view==='viv') renderVivarium();
+  if (justId && animate){
+    const t=document.querySelector(`.tile[data-id="${justId}"]`);
+    if(t){ t.classList.add('just-logged'); }
+  }
+}
+
+function checkAchievements(){
+  const now = new Set(ACHIEVEMENTS.filter(a=>a.test(logged)).map(a=>a.id));
+  for (const a of ACHIEVEMENTS){
+    if (now.has(a.id) && !prevEarned.has(a.id) && prevEarned.size>0){
+      setTimeout(()=>toast(`${a.glyph} Achievement: <b>${esc(a.name)}</b>`), 1100);
+    }
+  }
+  prevEarned = now;
+}
+
+/* ---------- favourites ---------- */
+async function toggleFav(id){
+  if (favs.has(id)) favs.delete(id); else favs.add(id);
+  await saveData();
+  renderHeader(); renderAchievements(); renderGrid(); renderInSeason();
+  const b = document.querySelector('#modal .favbtn');
+  if (b && openId===id){ b.classList.toggle('on', favs.has(id)); b.textContent = favs.has(id)?'\u2605 In favourites':'\u2606 Add to favourites'; }
+  checkAchievements();
+}
+
+/* ---------- in-season strip ---------- */
+function renderInSeason(){
+  const wrap = $('#inseasonWrap'); if(!wrap) return;
+  if (view!=='cat'){ wrap.hidden = true; return; }
+  const m = monthNow();
+  const mEl = $('#isMonth'); if (mEl) mEl.textContent = MONTHS[m-1];
+  const due = SPECIES.filter(s=>!logged[s.id] && (s.months||[]).includes(m))
+                     .sort((a,b)=> RARITY[b.rarity].order-RARITY[a.rarity].order || (b.mm||0)-(a.mm||0))
+                     .slice(0,12);
+  if (!due.length){ wrap.hidden = true; return; }
+  wrap.hidden = false;
+  $('#inseason').innerHTML = due.map(s=>`
+    <button class="iscard" data-id="${s.id}" style="--rar:${RARITY[s.rarity].color}" aria-label="${esc(s.en)} \u2014 in season">
+      <span class="isart">${spiderSVG(s.art,'silhouette')}</span>
+      <span class="isnm">${esc(s.en)}</span>
+      <span class="israr">${RARITY[s.rarity].label}</span>
+    </button>`).join('');
+}
+
+/* ---------- stats dashboard ---------- */
+function barRow(label,g,t,color){
+  const pct = t ? Math.round(g/t*100) : 0;
+  return `<div class="statbar"><span class="sbl">${esc(label)}</span><span class="sbtrack"><i style="width:${pct}%;background:${color}"></i></span><span class="sbv">${g}/${t}</span></div>`;
+}
+function openStats(){
+  const n=count(logged), tot=SPECIES.length, xp=xpFor(logged), maxXP=totalXP();
+  const rank=rankFor(xp), ls=loggedSpecies(logged);
+  const order=['common','uncommon','rare','veryrare','legendary','mythic'];
+  const rarRows=order.map(r=>{ const t=SPECIES.filter(s=>s.rarity===r).length; const g=ls.filter(s=>s.rarity===r).length; return barRow(RARITY[r].label,g,t,RARITY[r].color); }).join('');
+  const typeRows=Object.keys(TYPES).map(tk=>{ const t=SPECIES.filter(s=>s.type===tk).length; if(!t) return ''; const g=ls.filter(s=>s.type===tk).length; return barRow(TYPES[tk],g,t,'var(--azulejo)'); }).join('');
+  const famG=familiesGot(logged).size, famT=familiesAll().length;
+  const noct=ls.filter(s=>s.noct).length, day=ls.filter(s=>!s.noct).length;
+  const biggest=ls.reduce((mx,s)=>(s.mm||0)>((mx&&mx.mm)||-1)?s:mx, null);
+  const endT=SPECIES.filter(s=>s.endemic).length, endG=ls.filter(s=>s.endemic).length;
+  const tiles=[
+    ['Logged', `${n} / ${tot}`],['Completion', `${Math.round(n/tot*100)}%`],
+    ['Experience', `${xp} / ${maxXP} XP`],['Rank', rank.name],
+    ['Families', `${famG} / ${famT}`],['Endemics', `${endG} / ${endT}`],
+    ['Day / night logged', `${day} / ${noct}`],['Favourites', `${favs.size}`],
+    ['Largest logged', biggest?`${esc(biggest.en)} (~${biggest.mm} mm)`:'\u2014'],['Notes written', `${noteCount(logged)}`],
+  ].map(([k,v])=>`<div class="stat"><div class="k">${esc(k)}</div><div class="v">${v}</div></div>`).join('');
+
+  $('#modal').innerHTML = `
+    <button class="closeb" data-act="close" aria-label="Close">\u00D7</button>
+    <div class="m-top" style="--rar:var(--azulejo)">
+      <div class="m-head">
+        <div class="num">Collection</div>
+        <h2 id="m-title">Your statistics</h2>
+        <div class="fam">A snapshot of your Aracnário so far</div>
+      </div>
+    </div>
+    <div class="m-body">
+      <div class="stats">${tiles}</div>
+      <h3 class="statshd">By rarity</h3>
+      <div class="statbars">${rarRows}</div>
+      <h3 class="statshd">By kind</h3>
+      <div class="statbars">${typeRows}</div>
+      <p class="src" style="margin-top:14px">Counts reflect species you have logged. Rarity and kind groupings are the same approximate categories used throughout the catalogue.</p>
+    </div>`;
+  $('#scrim').classList.add('open');
+  document.body.style.overflow='hidden';
+  openId=null;
+  const cb=$('.closeb'); if(cb) cb.focus();
+}
+
+/* ---------- celebration ---------- */
+function confettiBurst(){
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const c=document.createElement('div'); c.className='confetti'; c.setAttribute('aria-hidden','true');
+  const colors=['#e6982f','#4892c2','#5cbf87','#e57163','#d6b33a','#79cfc6'];
+  for(let i=0;i<90;i++){ const p=document.createElement('i');
+    p.style.left=Math.random()*100+'%';
+    p.style.background=colors[i%colors.length];
+    p.style.animationDelay=(Math.random()*0.35).toFixed(2)+'s';
+    p.style.setProperty('--rot', Math.floor(Math.random()*360)+'deg');
+    c.appendChild(p);
+  }
+  document.body.appendChild(c);
+  setTimeout(()=>c.remove(), 2800);
+}
+
+/* ---------- glossary modal ---------- */
+const GLOSSARY = [
+  ['Cephalothorax','The front body section (also called the prosoma), bearing the eyes, jaws and legs.'],
+  ['Abdomen','The rear body section (opisthosoma), holding the gut, heart and silk glands.'],
+  ['Chelicerae','The jaws, each tipped with a fang that delivers venom.'],
+  ['Pedipalps','Small leg-like feelers beside the mouth; in adult males they are swollen and used to transfer sperm.'],
+  ['Spinnerets','Finger-like organs at the rear tip that spin silk.'],
+  ['Cribellate silk','Woolly, dry silk combed out through a special plate; it traps prey by tangling rather than glue.'],
+  ['Orb web','The classic wheel-shaped web of radial spokes and a sticky spiral.'],
+  ['Stabilimentum','A band or zig-zag of extra silk that some orb-weavers add to the web.'],
+  ['Egg sac','A silk parcel that protects the eggs.'],
+  ['Instar','A stage of growth between two moults.'],
+  ['Moult','Shedding the old exoskeleton in order to grow (also called ecdysis).'],
+  ['Ballooning','Drifting away on a strand of silk carried by the wind, used mainly by spiderlings.'],
+  ['Matriphagy','When spiderlings feed on their own mother.'],
+  ['Stridulation','Making sound by rubbing body parts together.'],
+  ['Araneomorph','The group containing most spiders here; their fangs pinch sideways toward each other.'],
+];
+function openGlossary(){
+  const rows = GLOSSARY.map(([t,d])=>`<div class="gloss"><span class="gt">${esc(t)}</span><span class="gd">${esc(d)}</span></div>`).join('');
+  $('#modal').innerHTML = `
+    <button class="closeb" data-act="close" aria-label="Close">\u00D7</button>
+    <div class="m-top" style="--rar:var(--azulejo)">
+      <div class="m-head">
+        <div class="num">Reference</div>
+        <h2 id="m-title">Glossary</h2>
+        <div class="fam">Words used around the catalogue</div>
+      </div>
+    </div>
+    <div class="m-body">${rows}</div>`;
+  $('#scrim').classList.add('open');
+  document.body.style.overflow='hidden';
+  openId=null;
+  const cb=$('.closeb'); if(cb) cb.focus();
+}
+
+/* ---------- view switching + vivarium ---------- */
+let vivInterval = null;
+let petCardId = null;
+let vivLevelSeen = {};
+function setView(v){
+  view = v;
+  const cat = (v==='cat');
+  ['achRow','controls','countLine','grid','footnote'].forEach(id=>{ const el=$('#'+id); if(el) el.style.display = cat?'':'none'; });
+  const viv=$('#vivariumView'); if(viv) viv.style.display = cat?'none':'block';
+  document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-pressed', String(t.dataset.view===v)));
+  if(cat){ clearVivTimers(); stopVivTick(); renderInSeason(); }
+  else { const w=$('#inseasonWrap'); if(w) w.hidden=true; renderVivarium(); startVivTick(); }
+  try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(e){}
+}
+function startVivTick(){
+  stopVivTick();
+  vivInterval = setInterval(()=>{ tickAllPets(); refreshResidentBars(); checkSocial(); saveData(); }, 4000);
+}
+function stopVivTick(){ if(vivInterval){ clearInterval(vivInterval); vivInterval=null; } }
+function clearVivTimers(){ vivTimers.forEach(t=>clearTimeout(t)); vivTimers=[]; }
+const RES_W = 54, RES_H = 64;
+function residentPos(tank){
+  const pad=10, tw=tank.clientWidth||320, th=tank.clientHeight||440;
+  return { x: pad+Math.random()*Math.max(1, tw-RES_W-pad*2),
+           y: pad+Math.random()*Math.max(1, th-RES_H-pad*2) };
+}
+function wander(el, tank){
+  function step(){
+    if(view!=='viv' || !el.isConnected) return;
+    const p=residentPos(tank), dur=2600+Math.random()*4200;
+    el.style.transitionDuration=dur+'ms';
+    el.classList.add('skitter');
+    el.style.transform=`translate(${p.x}px,${p.y}px)`;
+    const t1=setTimeout(()=>el.classList.remove('skitter'), dur);
+    const t2=setTimeout(step, dur + 700 + Math.random()*3200);
+    vivTimers.push(t1,t2);
+  }
+  const t=setTimeout(step, 400+Math.random()*2600); vivTimers.push(t);
+}
+function eligibleVivSpecies(){
+  // favourited + logged species are eligible to bring into the vivarium; if nothing is
+  // favourited yet, fall back to all logged species so the picker isn't empty.
+  const favLogged = loggedSpecies(logged).filter(s=>isFav(s.id));
+  return favLogged.length ? favLogged : loggedSpecies(logged);
+}
+function renderVivarium(){
+  clearVivTimers();
+  const tank=$('#tank'); if(!tank) return;
+  tank.querySelectorAll('.resident, .fly').forEach(el=>el.remove());
+  closePetCard();
+  vivRoster = vivRoster.filter(id=>logged[id]);
+  const residents = vivRoster.map(byId).filter(Boolean);
+  tickAllPets();
+  residents.forEach(s=>{ vivLevelSeen[s.id] = levelFor(ensurePet(s.id).careXp); });
+  const cnt=$('#vivCount'); if(cnt) cnt.textContent = residents.length ? `${residents.length} resident${residents.length>1?'s':''}` : '';
+  const empty=$('#vivEmpty'); if(empty) empty.hidden = residents.length>0;
+  residents.forEach(s=>{
+    const b=document.createElement('button');
+    b.className='resident'; b.dataset.id=s.id; b.title=s.en; b.setAttribute('aria-label', s.en);
+    b.innerHTML=spiderSVG(s.art,'full')+'<div class="vbars"><div class="vbar hunger"><i></i></div><div class="vbar mood"><i></i></div></div>';
+    const p=residentPos(tank);
+    b.style.transform=`translate(${p.x}px,${p.y}px)`;
+    tank.appendChild(b);
+    wander(b, tank);
+  });
+  refreshResidentBars();
+}
+function refreshResidentBars(){
+  document.querySelectorAll('#tank .resident').forEach(el=>{
+    const id=+el.dataset.id, p=vivPets[id]; if(!p) return;
+    const hi=el.querySelector('.vbar.hunger i'), mi=el.querySelector('.vbar.mood i');
+    if(hi) hi.style.width = Math.round(p.hunger)+'%';
+    if(mi) mi.style.width = Math.round(p.mood)+'%';
+  });
+  if(petCardId!=null) renderPetCard(petCardId);
+}
+function checkSocial(){
+  const els=[...document.querySelectorAll('#tank .resident')];
+  for(let i=0;i<els.length;i++) for(let j=i+1;j<els.length;j++){
+    const a=els[i], b2=els[j];
+    if(a.classList.contains('social')||b2.classList.contains('social')) continue;
+    const ma=/translate\(([-0-9.]+)px,\s*([-0-9.]+)px\)/.exec(a.style.transform);
+    const mb=/translate\(([-0-9.]+)px,\s*([-0-9.]+)px\)/.exec(b2.style.transform);
+    if(!ma||!mb) continue;
+    const dx=(+ma[1])-(+mb[1]), dy=(+ma[2])-(+mb[2]);
+    if(Math.hypot(dx,dy) < RES_W*0.9){
+      [a,b2].forEach(el=>{ el.classList.add('social'); setTimeout(()=>el.classList.remove('social'),1100); });
+      [+a.dataset.id, +b2.dataset.id].forEach(id=>{ const p=ensurePet(id); p.mood=Math.min(100,p.mood+3); });
+    }
+  }
+}
+function feedAt(x,y){
+  if(view!=='viv') return;
+  const tank=$('#tank'); if(!tank) return;
+  const residents=[...tank.querySelectorAll('.resident')];
+  if(!residents.length) return;
+  const fly=document.createElement('div'); fly.className='fly';
+  fly.style.left=(x-3)+'px'; fly.style.top=(y-3)+'px';
+  tank.appendChild(fly);
+  let best=null,bd=1e12;
+  residents.forEach(r=>{ const m=/translate\(([-0-9.]+)px,\s*([-0-9.]+)px\)/.exec(r.style.transform);
+    const rx=(m?+m[1]:0)+RES_W/2, ry=(m?+m[2]:0)+RES_W/2; const d=(rx-x)*(rx-x)+(ry-y)*(ry-y);
+    if(d<bd){ bd=d; best=r; } });
+  if(best){
+    best.style.transitionDuration='650ms'; best.classList.add('skitter');
+    best.style.transform=`translate(${x-RES_W/2}px,${y-RES_W/2}px)`;
+    const id=+best.dataset.id, p=ensurePet(id);
+    p.hunger=Math.min(100,p.hunger+22); p.mood=Math.min(100,p.mood+6); p.careXp+=8;
+    const t=setTimeout(()=>{ fly.remove(); best.classList.remove('skitter'); refreshResidentBars(); checkLevelUp(id); saveData(); }, 760);
+    vivTimers.push(t);
+  } else { const t=setTimeout(()=>fly.remove(), 1200); vivTimers.push(t); }
+}
+function feedRandom(){ const tank=$('#tank'); if(!tank) return; const tw=tank.clientWidth||320, th=tank.clientHeight||440; feedAt(40+Math.random()*Math.max(1,tw-80), 40+Math.random()*Math.max(1,th-80)); }
+function feedOne(id){
+  const el=document.querySelector(`#tank .resident[data-id="${id}"]`); if(!el) return;
+  const m=/translate\(([-0-9.]+)px,\s*([-0-9.]+)px\)/.exec(el.style.transform);
+  feedAt((m?+m[1]:0)+RES_W/2, (m?+m[2]:0)+RES_W/2);
+}
+function petPet(id){
+  const p=ensurePet(id), now=Date.now();
+  if(now-(p.lastPet||0) < 1200) return;   // debounce rapid taps
+  p.lastPet=now; p.mood=Math.min(100,p.mood+6); p.careXp+=3;
+  const el=document.querySelector(`#tank .resident[data-id="${id}"]`);
+  if(el){ el.classList.add('poked'); setTimeout(()=>el.classList.remove('poked'),420); }
+  checkLevelUp(id); refreshResidentBars(); saveData();
+}
+function checkLevelUp(id){
+  const p=ensurePet(id), lv=levelFor(p.careXp);
+  if((vivLevelSeen[id]||0) < lv){
+    vivLevelSeen[id]=lv;
+    const s=byId(id);
+    toast(`✨ ${esc(s?s.en:'Your spider')} grew into a <b>${esc(VIV_STAGES[lv])}</b>!`);
+  }
+}
+function openPetCard(id){
+  petCardId=id;
+  const card=$('#petCard'), el=document.querySelector(`#tank .resident[data-id="${id}"]`), tank=$('#tank');
+  if(!card||!el||!tank) return;
+  const tr=tank.getBoundingClientRect(), er=el.getBoundingClientRect();
+  let left = er.left-tr.left+RES_W+8;
+  if(left+200 > tank.clientWidth) left = Math.max(4, er.left-tr.left-208);
+  const top = Math.max(4, Math.min(er.top-tr.top, tank.clientHeight-160));
+  card.style.left=left+'px'; card.style.top=top+'px';
+  card.hidden=false;
+  renderPetCard(id);
+}
+function closePetCard(){ petCardId=null; const card=$('#petCard'); if(card) card.hidden=true; }
+function renderPetCard(id){
+  const card=$('#petCard'); if(!card||card.hidden) return;
+  const s=byId(id), p=vivPets[id]; if(!s||!p) return;
+  const lv=levelFor(p.careXp), stage=VIV_STAGES[lv], nextXp=VIV_LEVEL_XP[lv+1];
+  card.innerHTML = `
+    <h4>${esc(s.en)}</h4>
+    <div class="pclevel">${esc(stage)}${nextXp!=null ? ` &middot; ${p.careXp}/${nextXp} care XP` : ' &middot; max stage'}</div>
+    <div class="pcrow">Hunger<span class="pcbar"><i style="width:${Math.round(p.hunger)}%;background:#d8a23a"></i></span></div>
+    <div class="pcrow">Mood<span class="pcbar"><i style="width:${Math.round(p.mood)}%;background:#5fb88a"></i></span></div>
+    <div class="pcactions">
+      <button class="btn primary" data-pcact="feed" data-id="${id}">Feed</button>
+      <button class="btn" data-pcact="pet" data-id="${id}">Pet</button>
+    </div>
+    <div class="pcactions"><button class="btn ghostbtn" data-pcact="view" data-id="${id}">View species</button></div>`;
+}
+function openRosterPicker(){
+  const list = eligibleVivSpecies();
+  $('#rosterModal').innerHTML = `
+    <button class="closeb" data-ract="close" aria-label="Close">×</button>
+    <h2 id="roster-title">Choose vivarium residents</h2>
+    <p class="sub">Pick up to ${ROSTER_MAX} of your favourite logged spiders to live in the tank.</p>
+    <div class="roster-list">${list.length ? list.map(s=>{
+      const checked = vivRoster.includes(s.id);
+      return `<label class="roster-row${checked?' checked':''}">
+        <input type="checkbox" data-rcheck="${s.id}" ${checked?'checked':''}>
+        <span class="rart">${spiderSVG(s.art,'full')}</span>
+        <span class="rname">${esc(s.en)}<br><span class="rsub">${esc(s.fam)}</span></span>
+      </label>`;
+    }).join('') : '<p class="sub">Favourite a few species in the Catalogue first, then come back here to bring them into the vivarium.</p>'}</div>
+    <div class="logactions"><button class="btn primary" data-ract="done">Done</button></div>`;
+  $('#rosterScrim').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeRosterPicker(){ $('#rosterScrim').classList.remove('open'); document.body.style.overflow=''; }
+
+/* ---------- about modal ---------- */
+function openAbout(){
+  $('#modal').innerHTML = `
+    <button class="closeb" data-act="close" aria-label="Close">\u00D7</button>
+    <div class="m-top" style="--rar:var(--azulejo)">
+      <div class="m-head">
+        <div class="num">About</div>
+        <h2 id="m-title">About this catalogue &amp; its data</h2>
+        <div class="fam">How to read it, and where the facts come from</div>
+      </div>
+    </div>
+    <div class="m-body about">
+      <p>This is a learning aid covering <b>every spider species with research-grade records in Portugal</b> &mdash; currently ${SPECIES.length}, pulled live from iNaturalist. It is not a scientific identification key.</p>
+      <p><b>Live data.</b> The species list, observation counts, photos and the month-by-month activity charts come from <b>iNaturalist&rsquo;s public API</b>, limited to community-verified (&ldquo;research-grade&rdquo;) records in Portugal. It is cached on your device so the app keeps working offline in the field, and refreshes when you reconnect.</p>
+      <p><b>Photos</b> are shown only when they carry an open (Creative Commons) licence, always with credit to the photographer; where no open photo exists, you&rsquo;ll see the generated sprite instead.</p>
+      <p><b>Rarity tiers</b> (Common &rarr; Legendary) are derived from how often each species is observed in Portugal &mdash; an <b>approximate guide to how likely a casual observer is to run into it</b>, not a measure of population size or conservation status.</p>
+      <p>The <b>spider sprites are generated and stylised</b> &mdash; their look is derived from the spider&rsquo;s family, not from the individual animal &mdash; so they are not to scale and should never be used to identify a real spider.</p>
+      <p><b>Habitat, diet and hunting style</b> are general, well-established facts about the spider&rsquo;s <b>family</b> (e.g. all jumping spiders, all orb-weavers) rather than curated per-species text &mdash; iNaturalist doesn&rsquo;t provide that level of detail for every species, so this is the honest level of detail the app can offer for the full live catalogue.</p>
+      <p><b>Experience points and ranks</b> are only a game layer: rarer species are simply worth more points, which carries no biological meaning.</p>
+      <p><b>Medical note.</b> Aracn&aacute;rio is <b>not medical guidance</b>. Most species here are marked &ldquo;not assessed&rdquo; &mdash; the app deliberately does not guess. A small number of genuinely relevant spiders (such as recluses and true widows) are flagged, but even verified bites are uncommon and serious outcomes rare, and many skin wounds blamed on spiders turn out to be something else. If you are bitten and feel unwell, seek medical advice.</p>
+      <p>Your sightings are saved ${persistOK?'on this device and remembered between visits':'in this session only (persistent storage was unavailable)'}.</p>
+      <p class="src">Data &amp; references: <b>iNaturalist</b> (api.inaturalist.org) for species, observations, photos and seasonality; <b>Wikipedia</b> for summaries. Medical context: Acta M&eacute;dica Portuguesa, &ldquo;Spider poisoning in Portugal: fact or myth?&rdquo;.</p>
+    </div>`;
+  $('#scrim').classList.add('open');
+  document.body.style.overflow='hidden';
+  const cb=$('.closeb'); if(cb) cb.focus();
+}
+
+/* ---------- toast ---------- */
+let toastTimer=null;
+function toast(html){
+  const t=$('#toast'); t.innerHTML=html; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+/* ============================================================
+   Events
+   ============================================================ */
+$('#grid').addEventListener('click', e=>{
+  const fav=e.target.closest('[data-fav]');
+  if (fav){ e.stopPropagation(); toggleFav(+fav.dataset.fav); return; }
+  const tile=e.target.closest('.tile'); if(!tile) return;
+  openDetail(+tile.dataset.id);
+});
+$('#inseason').addEventListener('click', e=>{
+  const card=e.target.closest('.iscard'); if(!card) return;
+  openDetail(+card.dataset.id);
+});
+$('#scrim').addEventListener('click', e=>{
+  if (e.target===$('#scrim')){ closeDetail(); return; }
+  const fav=e.target.closest('[data-fav]');
+  if (fav){ toggleFav(+fav.dataset.fav); return; }
+  const act = e.target.closest('[data-act]'); if(!act) return;
+  const a=act.dataset.act;
+  if (a==='close') closeDetail();
+  else if (a==='log') logSpecies(openId, true);
+  else if (a==='save') logSpecies(openId, false);
+  else if (a==='remove') removeSpecies(openId);
+});
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && $('#scrim').classList.contains('open')) closeDetail(); });
+
+$('#chips').addEventListener('click', async e=>{
+  const c=e.target.closest('.chip'); if(!c) return;
+  const mode=c.dataset.filter;
+  const press=el=>[...$('#chips').children].forEach(x=>x.setAttribute('aria-pressed', x===el?'true':'false'));
+  if(mode==='nearby'){
+    // Always re-fetch location on tap so it stays current as you move in the field.
+    c.classList.add('busy'); const ok=await loadNearby(); c.classList.remove('busy');
+    if(!ok) return;                       // keep the current filter if it failed
+    filterMode='nearby'; rarityFilter=null; press(c); renderGrid(); return;
+  }
+  filterMode=mode; rarityFilter=null; press(c); renderGrid();
+});
+$('#search').addEventListener('input', e=>{ searchText=e.target.value.trim(); renderGrid(); });
+$('#sort').addEventListener('change', e=>{ sortMode=e.target.value; renderGrid(); });
+$('#aboutBtn').addEventListener('click', openAbout);
+$('#statsBtn').addEventListener('click', openStats);
+$('#glossaryBtn').addEventListener('click', openGlossary);
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click', ()=>setView(t.dataset.view)));
+$('#feedBtn').addEventListener('click', feedRandom);
+$('#rosterBtn').addEventListener('click', openRosterPicker);
+$('#tank').addEventListener('click', e=>{
+  if(e.target.closest('#petCard')) return;
+  const r=e.target.closest('.resident');
+  if(r){ const id=+r.dataset.id; if(petCardId===id) closePetCard(); else openPetCard(id); return; }
+  closePetCard();
+  const tank=$('#tank'); const rect=tank.getBoundingClientRect();
+  feedAt(e.clientX-rect.left, e.clientY-rect.top);
+});
+$('#petCard').addEventListener('click', e=>{
+  e.stopPropagation();
+  const act=e.target.closest('[data-pcact]'); if(!act) return;
+  const id=+act.dataset.id;
+  if(act.dataset.pcact==='feed') feedOne(id);
+  else if(act.dataset.pcact==='pet') petPet(id);
+  else if(act.dataset.pcact==='view'){ closePetCard(); openDetail(id); }
+});
+$('#rosterModal').addEventListener('change', e=>{
+  const cb=e.target.closest('[data-rcheck]'); if(!cb) return;
+  const id=+cb.dataset.rcheck;
+  if(cb.checked){
+    if(vivRoster.length>=ROSTER_MAX){ cb.checked=false; toast(`You can only keep ${ROSTER_MAX} residents in the vivarium at once.`); return; }
+    vivRoster.push(id); ensurePet(id);
+  } else {
+    vivRoster = vivRoster.filter(x=>x!==id);
+  }
+  cb.closest('.roster-row').classList.toggle('checked', cb.checked);
+  saveData();
+});
+$('#rosterScrim').addEventListener('click', e=>{
+  if(e.target===$('#rosterScrim')){ closeRosterPicker(); renderVivarium(); return; }
+  const act=e.target.closest('[data-ract]'); if(!act) return;
+  closeRosterPicker(); renderVivarium();
+});
+
+function doReset(){
+  if (!count(logged)){ toast('Your log is already empty.'); return; }
+  if (confirm('Reset your Aracn\u00E1rio? This clears every logged sighting and cannot be undone.')){
+    logged={}; saveData(); prevEarned=new Set(); refreshAll(); checkAchievements(); toast('Log reset.');
+  }
+}
+$('#resetBtn').addEventListener('click', doReset);
+$('#resetBtn').addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); doReset(); }});
+
+/* ---------- breakdown pips act as rarity filters ---------- */
+$('#breakdown').addEventListener('click', e=>{
+  const pip=e.target.closest('.pip'); if(!pip) return;
+  const order=['common','uncommon','rare','veryrare','legendary','mythic'];
+  const idx=[...$('#breakdown').children].indexOf(pip);
+  const r=order[idx];
+  if (rarityFilter===r){ rarityFilter=null; } else { rarityFilter=r; filterMode='all';
+    [...$('#chips').children].forEach(x=>x.setAttribute('aria-pressed', x.dataset.filter==='all'?'true':'false')); }
+  renderGrid();
+  toast(rarityFilter?`Filtering: ${RARITY[r].label}`:'Filter cleared');
+});
+
+/* ============================================================
+   Live catalogue + migration (Phase 2)
+   ============================================================ */
+async function buildLiveCatalogue(){
+  if(!window.AracnarioINat || !window.AracnarioAdapt) return false;
+  let cat=null;
+  try{ cat = await AracnarioINat.fetchPortugalCatalog(); }
+  catch(e){ console.warn('[aracnario] catalogue fetch failed, trying cache:', e); }
+  if((!cat || !cat.species) && window.AracnarioDB){ try{ cat = await AracnarioDB.get('catalog:pt'); }catch(e){} }
+  if(!cat || !cat.species || !cat.species.length) return false;
+  // Families drive web-type, sprite and filters; Portuguese names are nice-to-have.
+  // Enrich once if the cache lacks them, then persist the enriched catalogue.
+  const needFam = cat.species.some(s=>!s.fam);
+  const needPt  = !('pt' in cat) ;            // catalog-level marker set after pt enrichment
+  if((needFam || needPt) && navigator.onLine){
+    try{
+      $('#grid').innerHTML = `<div class="empty">Identifying families&hellip;</div>`;
+      if(needFam) await AracnarioINat.enrichFamilies(cat.species);
+      if(needPt){ await AracnarioINat.enrichPortuguese(cat.species); cat.pt = true; }
+      if(window.AracnarioDB) await AracnarioDB.set('catalog:pt', cat);
+    }catch(e){ console.warn('[aracnario] enrichment failed:', e); }
+  }
+  SPECIES = AracnarioAdapt.liveToSpecies(cat);
+  MAXMM = Math.max(1, ...SPECIES.map(s=>s.mm||0));
+  return true;
+}
+
+/* One-time remap of saved logs/favourites from the old numeric ids to iNat taxon ids,
+   using the legacy INAT table. Runs only once the live (tid-keyed) catalogue is in use. */
+async function migrateLogIdsToTid(){
+  if(!window.AracnarioDB) return;
+  try{ if(await AracnarioDB.get('migration:logIdsToTid')) return; }catch(e){ return; }
+  const remap={}; for(const k in INAT){ const t=INAT[k]&&INAT[k].t; if(t) remap[k]=t; }
+  let changed=false;
+  const nl={}; for(const k in logged){ const t=remap[k]; if(t){ nl[t]=logged[k]; changed=true; } else nl[k]=logged[k]; }
+  logged=nl;
+  const nf=new Set(); favs.forEach(id=>{ const t=remap[id]; if(t){ nf.add(t); changed=true; } else nf.add(id); }); favs=nf;
+  try{ await AracnarioDB.set('migration:logIdsToTid', {at:Date.now()}); }catch(e){}
+  if(changed) await saveData();
+}
+
+/* Lazily enrich a species detail from iNat the first time its modal opens:
+   Wikipedia summary -> description, month histogram -> seasonality. Cached per taxon. */
+async function enrichDetail(s){
+  if(s._enriched || !window.AracnarioINat || !s.inat || !s.inat.t) return;
+  s._enriched=true;
+  try{
+    const det = await AracnarioINat.fetchTaxonDetail(s.inat.t);
+    if(det){ if(det.fam) s.fam=det.fam; if(det.summary) s.desc=det.summary; }
+  }catch(e){}
+  try{
+    const mo = await AracnarioINat.fetchSeasonality(s.inat.t);
+    if(mo && mo.length){ s.inat.mo=mo; s.months=AracnarioAdapt.activeMonths(mo); }
+  }catch(e){}
+  if(openId===s.id) openDetail(s.id);   // re-render with enriched data (guard above prevents a loop)
+}
+
+/* ============================================================
+   Init
+   ============================================================ */
+(async function init(){
+  $('#grid').innerHTML = `<div class="empty">Loading spiders of Portugal&hellip;</div>`;
+  await loadData();
+  const live = await buildLiveCatalogue();
+  if(live){
+    await migrateLogIdsToTid();
+  } else {
+    SPECIES = _LEGACY_SPECIES;            // offline, no cache yet: use the built-in starter set
+    MAXMM = Math.max(1, ..._LEGACY_SPECIES.map(s=>s.mm||0));
+    toast('Offline — showing the built-in starter set until you reconnect.');
+  }
+  prevEarned = new Set(ACHIEVEMENTS.filter(a=>a.test(logged)).map(a=>a.id));
+  vivRoster.forEach(id=>{ vivLevelSeen[id] = levelFor(ensurePet(id).careXp); });
+  renderHeader(); renderAchievements(); renderGrid(); renderInSeason();
+  setView('cat');
+})();
+</script>
+<script>
+/* Register the service worker so the app installs and works offline.
+   Only over http(s); skipped when opened directly as a file:// URL. */
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch((err) => {
+      console.warn('[aracnario] service worker registration failed:', err);
+    });
+  });
+}
+</script>
+</body>
+</html>
